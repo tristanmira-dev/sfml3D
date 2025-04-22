@@ -1,8 +1,8 @@
 #include <SFML/Graphics.hpp>
-#include "tests.hpp"
+#include "tests.h"
 #include "Matrix.h"
 #include "Mesh.h"
-#include "Graphics.hpp"
+#include "Graphics.h"
 #include <iostream>
 #include <initializer_list>
 #include <array>
@@ -145,19 +145,8 @@ int main()
 
             }
 
-            
-            
-
-            
-
-
         }
 
-
-        // draw everything here...
-        // window.draw(...);
-
-        // end the current frame
         window.display();
     }
 

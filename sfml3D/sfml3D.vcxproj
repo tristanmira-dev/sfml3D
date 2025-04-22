@@ -136,10 +136,12 @@
   <ItemGroup>
     <ClCompile Include="CommonUtils.cpp" />
     <ClInclude Include="CommonUtils.h" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Game_State_Mgr.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="Matrix.h" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Vector2D.cpp" />
@@ -147,9 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game_State_Mgr.h" />
-    <ClInclude Include="Graphics.hpp" />
+    <ClInclude Include="Graphics.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="tests.hpp" />
+    <ClInclude Include="tests.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="Vector3D.h" />
   </ItemGroup>
