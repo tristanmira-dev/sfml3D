@@ -79,17 +79,7 @@ namespace utils {
 		}
 		return true;
 	}
-	std::ostream& operator<<(std::ostream& os, Matrix4x4 const& mtx) {
-
-
-		for (int i{}; i < mtx.columnSize * mtx.rowSize; ++i) {
-
-			std::cout << (((i % mtx.rowSize) == 0 && i != 0) ? "\n" : "");
-			std::cout << mtx.m[i] << " ";
-		}
-
-		return os;
-	}
+	
 	/*Perspective matrix multiplication*/
 	Vector3D Matrix4x4::pMultiply(Vector3D const& vec) {
 		float w = ((*this)(3, 0) * vec.x + (*this)(3, 1) * vec.y + (*this)(3, 2) * vec.z + (*this)(3, 3) * 1);
@@ -121,6 +111,16 @@ namespace utils {
 		(*this)(1, 1) = cosf(rad);
 		(*this)(1, 2) = -sinf(rad);
 		(*this)(2, 1) = sinf(rad);
+		(*this)(2, 2) = cosf(rad);
+		(*this)(3, 3) = 1.f;
+	}
+
+	void Matrix4x4::setRotationY(float angle) {
+		float rad = toRad(angle);
+		(*this)(0, 0) = cosf(rad); 
+		(*this)(0, 2) = sinf(rad);
+		(*this)(1, 1) = 1.f;
+		(*this)(2, 0) = -sinf(rad);
 		(*this)(2, 2) = cosf(rad);
 		(*this)(3, 3) = 1.f;
 	}

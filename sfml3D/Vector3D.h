@@ -4,13 +4,11 @@
 
 namespace utils {
 
-	union Vector3D {
-		struct {
-			float x;
-			float y;
-			float z;
-		};
-		float xy[3];
+	struct Vector3D {
+		
+		float x;
+		float y;
+		float z;
 
 		Vector3D(float x = 0.0f, float y = 0.0f, float z = 0.0f);
 		Vector3D(Vector3D const& src) = default;

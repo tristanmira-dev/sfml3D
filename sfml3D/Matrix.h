@@ -27,6 +27,7 @@ namespace utils {
 		Vector3D operator*(Vector3D const& vec);
 
 		void setRotationX(float angle);
+		void setRotationY(float angle);
 
 		Vector3D pMultiply(Vector3D const& vec);
 
@@ -35,9 +36,6 @@ namespace utils {
 		bool operator==(float const (&arr)[16]);
 
 	};
-
-	std::ostream& operator<<(std::ostream& os, Matrix4x4 const& mtx);
-
 
 }
 

@@ -3,49 +3,70 @@
 #include "Matrix.h"
 #include "Mesh.h"
 #include "Graphics.h"
+#include "CommonUtils.h"
+#include "FileManager.h"
 #include <iostream>
 #include <initializer_list>
 #include <array>
 
+class SortCriterion {
+    public:
+        bool operator()(utils::Mesh::Vertices const& prev, utils::Mesh::Vertices const& next) {
+            float prevMidZ{};
+            float nextMidZ{};
+            for (int i{}; i < 3; ++i) {
+                prevMidZ += prev[i].coordinates.z;
+                nextMidZ += next[i].coordinates.z;
+            }
+
+            return prevMidZ / 2.f > nextMidZ / 2.f;
+        }
+};
+
 int main()
 {
+
+
     
     tests::runTests();
 
     utils::Matrix4x4 mtx{};
 
     utils::Matrix4x4 rotationX{};
+    utils::Matrix4x4 rotationY{};
 
 
     utils::Mesh tris{};
 
-    tris = {
+    manager::FileManager::readVertex("./Assets/knight(b3_6).obj", tris);
 
-        // SOUTH
-        { 0.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 0.0f },
-        { 0.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, 0.0f },
+    //tris = {
 
-        // EAST                                                      
-        { 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f },
-        { 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 0.0f, 1.0f },
+    //    // SOUTH
+    //    { 0.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 0.0f },
+    //    { 0.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, 0.0f },
 
-        // NORTH                                                     
-        { 1.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,    0.0f, 1.0f, 1.0f },
-        { 1.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 0.0f, 1.0f },
+    //    // EAST                                                      
+    //    { 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f },
+    //    { 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 0.0f, 1.0f },
 
-        // WEST                                                      
-        { 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 1.0f, 0.0f },
-        { 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 0.0f,    0.0f, 0.0f, 0.0f },
+    //    // NORTH                                                     
+    //    { 1.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,    0.0f, 1.0f, 1.0f },
+    //    { 1.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 0.0f, 1.0f },
 
-        // TOP                                                       
-        { 0.0f, 1.0f, 0.0f,    0.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f },
-        { 0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 0.0f },
+    //    // WEST                                                      
+    //    { 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 1.0f, 0.0f },
+    //    { 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 0.0f,    0.0f, 0.0f, 0.0f },
 
-        // BOTTOM                                                    
-        { 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f },
-        { 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f },
+    //    // TOP                                                       
+    //    { 0.0f, 1.0f, 0.0f,    0.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f },
+    //    { 0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 0.0f },
 
-    };
+    //    // BOTTOM                                                    
+    //    { 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f },
+    //    { 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f },
+
+    //};
 
 
     // create the window
@@ -54,7 +75,8 @@ int main()
 
     mtx.setProjectionMatrix(window, 0.1f, 1000.0f, 90.0f);
 
-    float currentAngle = 20.0f;
+    float currentXAngle = 180.0f;
+    float currentYAngle = 0.0f;
 
     // run the program as long as the window is open
     while (window.isOpen())
@@ -72,51 +94,64 @@ int main()
         window.clear(sf::Color::Black);
 
 
-        currentAngle += 0.05f;
+        //currentAngle += 0.5f;
+
+        utils::Mesh::VerticesContainer trianglesToDraw;
 
         for (utils::Mesh::Vertices const& vertices : tris.verticesContainer) {
 
+            utils::Mesh::Vertices translated = vertices;
             utils::Mesh::Vertices projected;
 
-            utils::Mesh::Vertices translated = vertices;
-
-
             /*SET ROTATION MATRIX*/
-            rotationX.setRotationX(currentAngle);
+            rotationX.setRotationX(currentXAngle);
+            rotationY.setRotationY(currentYAngle);
 
 
             /*ROTATION AROUND X TRANSFORMATION*/
-            translated[0] = rotationX * translated[0];
-            translated[1] = rotationX * translated[1];
-            translated[2] = rotationX * translated[2];
+            translated[0].coordinates = rotationX * translated[0].coordinates;
+            translated[1].coordinates = rotationX * translated[1].coordinates;
+            translated[2].coordinates = rotationX * translated[2].coordinates;
+            /*-------------------------------*/
+
+            /*ROTATION AROUND Y TRANSFORMATION*/
+            translated[0].coordinates = rotationY * translated[0].coordinates;
+            translated[1].coordinates = rotationY * translated[1].coordinates;
+            translated[2].coordinates = rotationY * translated[2].coordinates;
             /*-------------------------------*/
 
             /*TRANSLATE OBJECT to +2 IN THE Z AXIS TO BE SEEN IN THE SCREEN SPACE*/
-            translated[0].z += 2.0f;
-            translated[1].z += 2.0f;
-            translated[2].z += 2.0f;
+            translated[0].coordinates.z += 2.0f;
+            translated[1].coordinates.z += 2.0f;
+            translated[2].coordinates.z += 2.0f;
             /*------------------------------------------------------------------*/
 
             utils::Vector3D vec1, vec2, normal;
 
             /*CALCULATE THE NORMAL OF EACH TRIANGLE FACE IN THE PLANE*/
-            vec1 = translated[1] - translated[0];
-            vec2 = translated[2] - translated[0];
+            vec1 = translated[1].coordinates - translated[0].coordinates;
+            vec2 = translated[2].coordinates - translated[0].coordinates;
             normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
             /*------------------------------------------------------*/
 
+            currentYAngle += (currentYAngle > 360.f) ? (currentYAngle = 0.f) : 0.0001f;
+
             /*SET THE VECTOR FROM TRIANGLE PT TO CAMERA(0,0,0) IN ORDER TO DO 'CULLING'*/
-            utils::Vector3D lineFromCam = translated[0];
+            utils::Vector3D lineFromCam = translated[0].coordinates;
 
             /*CHECK IF THE ANGLE BETWEEN THE NORMAL AND VECTOR FROM CAM IS NEGATIVE(IN FRONT OF THE BACK) THEN CONTINUE WITH PERSPECTIVE PROJECTION*/
             if (lineFromCam.dot(normal) < 0.0f) {
 
-                projected.push_back(mtx.pMultiply(translated[0]));
-                projected.push_back(mtx.pMultiply(translated[1]));
-                projected.push_back(mtx.pMultiply(translated[2]));
-
+                projected.push_back(
+                    {
+                        mtx.pMultiply(translated[0].coordinates)
+                    }
+                );
+                projected.push_back({ mtx.pMultiply(translated[1].coordinates) });
+                projected.push_back({ mtx.pMultiply(translated[2].coordinates) });
 
                 normal.normalize();
+                
 
                 utils::Vector3D light{
                     0.f,
@@ -128,23 +163,44 @@ int main()
                 float dist{ std::fabs(normal.dot(light)) };
 
                 /*SCALE UP TO WINDOW DIMENSIONS*/
-                projected[0].x *= window.getSize().x; projected[0].y *= window.getSize().y;
-                projected[1].x *= window.getSize().x; projected[1].y *= window.getSize().y;
-                projected[2].x *= window.getSize().x; projected[2].y *= window.getSize().y;
+                projected[0].coordinates.x *= window.getSize().x; projected[0].coordinates.y *= window.getSize().y;
+                projected[1].coordinates.x *= window.getSize().x; projected[1].coordinates.y *= window.getSize().y;
+                projected[2].coordinates.x *= window.getSize().x; projected[2].coordinates.y *= window.getSize().y;
 
-                projected[0].x *= 2.0f; projected[0].y *= 2.0f;
-                projected[1].x *= 2.0f; projected[1].y *= 2.0f;
-                projected[2].x *= 2.0f; projected[2].y *= 2.0f;
+                projected[0].coordinates.x *= 4.0f; projected[0].coordinates.y *= 4.0f;
+                projected[1].coordinates.x *= 4.0f; projected[1].coordinates.y *= 4.0f;
+                projected[2].coordinates.x *= 4.0f; projected[2].coordinates.y *= 4.0f;
 
                 /*TRANSLATE TO MIDDLE OF THE SCREEN*/
-                projected[0].x += window.getSize().x * 0.5f; projected[0].y += window.getSize().y * 0.5f;
-                projected[1].x += window.getSize().x * 0.5f; projected[1].y += window.getSize().y * 0.5f;
-                projected[2].x += window.getSize().x * 0.5f; projected[2].y += window.getSize().y * 0.5f;
+                projected[0].coordinates.x += window.getSize().x * 0.5f; projected[0].coordinates.y += window.getSize().y * 0.5f;
+                projected[1].coordinates.x += window.getSize().x * 0.5f; projected[1].coordinates.y += window.getSize().y * 0.5f;
+                projected[2].coordinates.x += window.getSize().x * 0.5f; projected[2].coordinates.y += window.getSize().y * 0.5f;
 
-                Render::Graphics::drawTriangle(window, projected, static_cast<sf::Uint8>(dist*255.f), Render::TRIANGLE);
+                projected[0].coordinates.y += 150.0f;
+                projected[1].coordinates.y += 150.0f;
+                projected[2].coordinates.y += 150.0f;
+                
+                projected[0].colorVal = dist * 255.f;
+                projected[1].colorVal = dist * 255.f;
+                projected[2].colorVal = dist * 255.f;
+
+
+
+                Render::Graphics::drawTriangle(window, projected, static_cast<sf::Uint8>(projected[0].colorVal));
+
+                trianglesToDraw.push_back(projected);
 
             }
 
+            
+
+
+        }
+
+        std::sort(trianglesToDraw.begin(), trianglesToDraw.end(), SortCriterion{});
+
+        for (const utils::Mesh::Vertices& vertices : trianglesToDraw) {
+            Render::Graphics::drawTriangle(window, vertices, vertices[0].colorVal);
         }
 
         window.display();

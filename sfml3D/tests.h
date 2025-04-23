@@ -4,11 +4,17 @@
 #include "Vector2D.h"
 #include "Vector3D.h"
 #include "Matrix.h"
+#include "FileManager.h"
 #include <cassert>
 
 
 namespace tests {
+	using namespace manager;
 	using namespace utils;
+	inline void testFileReader() {
+		Mesh testMesh{};
+		//assert (manager::FileManager::readVertex("./Assets/mesh1.obj", testMesh) == FileManager::READ_OK && "File Read OK");
+	}
 	inline void vec3DTests() {
 		Vector3D a{ 3, 1, 0 }, b{ 1, 2, 5 };
 
@@ -48,6 +54,7 @@ namespace tests {
 		vec3DTests();
 		additionOverloadVec2D();
 		matrixTest();
+		testFileReader();
 	}
 }
 
