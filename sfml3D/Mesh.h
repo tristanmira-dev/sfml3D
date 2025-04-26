@@ -4,6 +4,7 @@
 #include <vector>
 #include <initializer_list>
 #include "Vector3D.h"
+#include "Matrix.h"
 
 
 
@@ -27,6 +28,7 @@ namespace utils {
 		Mesh() = default;
 		Mesh(Vertices const &srcVertice, std::vector<VerticeIdx> const &srcIdx);
 		Mesh& operator=(Init_List src);
+		static void transformVertice(Matrix4x4& mtx, Vertices& vertices);
 	};
 
 }

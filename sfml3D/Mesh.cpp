@@ -59,7 +59,10 @@ namespace utils {
 		
 		return *this;
 	}
-	VertexData::VertexData(Vector3D coordinates, float colorVal) : coordinates{ coordinates }, colorVal{colorVal} {
-	/*EMPTY*/
+	void Mesh::transformVertice(Matrix4x4& mtx, Vertices& vertices) {
+		vertices[0].coordinates = mtx * vertices[0].coordinates;
+		vertices[1].coordinates = mtx * vertices[1].coordinates;
+		vertices[2].coordinates = mtx * vertices[2].coordinates;
 	}
+	VertexData::VertexData(Vector3D coordinates, float colorVal) : coordinates{ coordinates }, colorVal{colorVal} { /*EMPTY*/ }
 }

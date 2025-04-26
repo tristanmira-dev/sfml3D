@@ -26,8 +26,6 @@ class SortCriterion {
 int main()
 {
 
-
-    
     tests::runTests();
 
     utils::Matrix4x4 mtx{};
@@ -38,36 +36,7 @@ int main()
 
     utils::Mesh tris{};
 
-    manager::FileManager::readVertex("./Assets/knight(b3_6).obj", tris);
-
-    //tris = {
-
-    //    // SOUTH
-    //    { 0.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 0.0f },
-    //    { 0.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, 0.0f },
-
-    //    // EAST                                                      
-    //    { 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f },
-    //    { 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 0.0f, 1.0f },
-
-    //    // NORTH                                                     
-    //    { 1.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,    0.0f, 1.0f, 1.0f },
-    //    { 1.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 0.0f, 1.0f },
-
-    //    // WEST                                                      
-    //    { 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 1.0f, 0.0f },
-    //    { 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 0.0f,    0.0f, 0.0f, 0.0f },
-
-    //    // TOP                                                       
-    //    { 0.0f, 1.0f, 0.0f,    0.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f },
-    //    { 0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 0.0f },
-
-    //    // BOTTOM                                                    
-    //    { 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f },
-    //    { 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f },
-
-    //};
-
+    manager::FileManager::readVertex("./Assets/kindred_sketchfab1.obj", tris);
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
@@ -108,23 +77,10 @@ int main()
             rotationY.setRotationY(currentYAngle);
 
 
-            /*ROTATION AROUND X TRANSFORMATION*/
-            translated[0].coordinates = rotationX * translated[0].coordinates;
-            translated[1].coordinates = rotationX * translated[1].coordinates;
-            translated[2].coordinates = rotationX * translated[2].coordinates;
+            /*ROTATION AROUND Y THEN TRANSLATION BY Z AXIS*/
+            utils::Matrix4x4 finalTransform = utils::Matrix4x4{ {1,0,0,0}, {0,1,0,0}, {0,0,1,1.f}, {0,0,0,1} } * rotationY;
+            utils::Mesh::transformVertice(finalTransform, translated);
             /*-------------------------------*/
-
-            /*ROTATION AROUND Y TRANSFORMATION*/
-            translated[0].coordinates = rotationY * translated[0].coordinates;
-            translated[1].coordinates = rotationY * translated[1].coordinates;
-            translated[2].coordinates = rotationY * translated[2].coordinates;
-            /*-------------------------------*/
-
-            /*TRANSLATE OBJECT to +2 IN THE Z AXIS TO BE SEEN IN THE SCREEN SPACE*/
-            translated[0].coordinates.z += 2.0f;
-            translated[1].coordinates.z += 2.0f;
-            translated[2].coordinates.z += 2.0f;
-            /*------------------------------------------------------------------*/
 
             utils::Vector3D vec1, vec2, normal;
 
@@ -134,7 +90,7 @@ int main()
             normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
             /*------------------------------------------------------*/
 
-            currentYAngle += (currentYAngle > 360.f) ? (currentYAngle = 0.f) : 0.0001f;
+            currentYAngle += (currentYAngle > 360.f) ? (currentYAngle = 0.f) : 0.001f;
 
             /*SET THE VECTOR FROM TRIANGLE PT TO CAMERA(0,0,0) IN ORDER TO DO 'CULLING'*/
             utils::Vector3D lineFromCam = translated[0].coordinates;
@@ -142,11 +98,7 @@ int main()
             /*CHECK IF THE ANGLE BETWEEN THE NORMAL AND VECTOR FROM CAM IS NEGATIVE(IN FRONT OF THE BACK) THEN CONTINUE WITH PERSPECTIVE PROJECTION*/
             if (lineFromCam.dot(normal) < 0.0f) {
 
-                projected.push_back(
-                    {
-                        mtx.pMultiply(translated[0].coordinates)
-                    }
-                );
+                projected.push_back({ mtx.pMultiply(translated[0].coordinates) });
                 projected.push_back({ mtx.pMultiply(translated[1].coordinates) });
                 projected.push_back({ mtx.pMultiply(translated[2].coordinates) });
 
@@ -161,46 +113,42 @@ int main()
                 //light.normalize();
 
                 float dist{ std::fabs(normal.dot(light)) };
+                
+                float halfDistX{ window.getSize().x * 0.5f };
+                float halfDistY{ window.getSize().y * 0.5f };
 
-                /*SCALE UP TO WINDOW DIMENSIONS*/
-                projected[0].coordinates.x *= window.getSize().x; projected[0].coordinates.y *= window.getSize().y;
-                projected[1].coordinates.x *= window.getSize().x; projected[1].coordinates.y *= window.getSize().y;
-                projected[2].coordinates.x *= window.getSize().x; projected[2].coordinates.y *= window.getSize().y;
+                /*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
+                utils::Matrix4x4 transform2 = utils::Matrix4x4{
+                    {1, 0, 0, halfDistX},
+                    {0, 1, 0, halfDistY},
+                    {0, 0, 1, 0},
+                    {0, 0, 0, 1}
+                } * utils::Matrix4x4 {
+                    {2.f*static_cast<float>(window.getSize().x), 0, 0, 0}, 
+                    {0, 2.f*static_cast<float>(window.getSize().y), 0, 0}, 
+                    {0, 0, 1, 0}, 
+                    {0,0,0,1} 
+                };
 
-                projected[0].coordinates.x *= 4.0f; projected[0].coordinates.y *= 4.0f;
-                projected[1].coordinates.x *= 4.0f; projected[1].coordinates.y *= 4.0f;
-                projected[2].coordinates.x *= 4.0f; projected[2].coordinates.y *= 4.0f;
+                utils::Mesh::transformVertice(transform2, projected);
 
-                /*TRANSLATE TO MIDDLE OF THE SCREEN*/
-                projected[0].coordinates.x += window.getSize().x * 0.5f; projected[0].coordinates.y += window.getSize().y * 0.5f;
-                projected[1].coordinates.x += window.getSize().x * 0.5f; projected[1].coordinates.y += window.getSize().y * 0.5f;
-                projected[2].coordinates.x += window.getSize().x * 0.5f; projected[2].coordinates.y += window.getSize().y * 0.5f;
-
-                projected[0].coordinates.y += 150.0f;
-                projected[1].coordinates.y += 150.0f;
-                projected[2].coordinates.y += 150.0f;
                 
                 projected[0].colorVal = dist * 255.f;
                 projected[1].colorVal = dist * 255.f;
                 projected[2].colorVal = dist * 255.f;
 
-
-
-                Render::Graphics::drawTriangle(window, projected, static_cast<sf::Uint8>(projected[0].colorVal));
-
                 trianglesToDraw.push_back(projected);
 
             }
 
-            
-
-
         }
 
+        /*SORT THE PROJECTED VERTICES STARTING FROM THE VERTICES WITH A LARGER Z VALUE(GOING FURTHER FROM PLAYER) 
+        TO THE VERTICES WITH THE SMALLER Z VALUE(GOING TOWARDS PLAYER) TO DRAW THE VERTICES BEHIND FIRST*/
         std::sort(trianglesToDraw.begin(), trianglesToDraw.end(), SortCriterion{});
 
         for (const utils::Mesh::Vertices& vertices : trianglesToDraw) {
-            Render::Graphics::drawTriangle(window, vertices, vertices[0].colorVal);
+            Render::Graphics::drawTriangle(window, vertices, static_cast<sf::Uint8>(vertices[0].colorVal));
         }
 
         window.display();

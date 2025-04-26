@@ -35,17 +35,6 @@ namespace utils {
 		(*this)(2, 2) = (-fNear - fFar) / (fNear - fFar);
 		(*this)(2, 3) = (2 * fNear * fFar) / (fNear - fFar);
 		(*this)(3, 2) = 1;
-
-
-
-
-
-		/*(*this)(0, 0) = aspectRatio * fFovRad;
-		(*this)(1, 1) = fFovRad;
-		(*this)(2, 2) = fFar / (fFar - fNear);
-		(*this)(3, 2) = (-fFar * fNear) / (fFar - fNear);
-		(*this)(2, 3) = 1.0f;
-		(*this)(3, 3) = 0.0f;*/
 		
 	}
 
@@ -80,7 +69,7 @@ namespace utils {
 		return true;
 	}
 	
-	/*Perspective matrix multiplication*/
+	/*Perspective matrix multiplication with vector*/
 	Vector3D Matrix4x4::pMultiply(Vector3D const& vec) {
 		float w = ((*this)(3, 0) * vec.x + (*this)(3, 1) * vec.y + (*this)(3, 2) * vec.z + (*this)(3, 3) * 1);
 
@@ -103,6 +92,23 @@ namespace utils {
 			((*this)(1,0) * vec.x + (*this)(1,1) * vec.y + (*this)(1,2) * vec.z + (*this)(1,3)),
 			((*this)(2,0) * vec.x + (*this)(2,1) * vec.y + (*this)(2,2) * vec.z + (*this)(2,3))
 		};
+	}
+
+	Matrix4x4 Matrix4x4::operator*(Matrix4x4 const& mtx)
+	{
+		Matrix4x4 newMtx;
+		for (int row{}; row < this->rowSize; ++row) {
+			for (int column{}; column < this->columnSize; ++column) {
+				float sum = 0.0f;
+				for (int col2{}; col2 < this->columnSize; ++col2) {
+					sum += (*this)(row, col2) * mtx(col2, column);
+				}
+				newMtx(row, column) = sum;
+			}
+		}
+
+
+		return newMtx;
 	}
 
 	void Matrix4x4::setRotationX(float angle) {
