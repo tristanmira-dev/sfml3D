@@ -63,7 +63,8 @@ int main()
         window.clear(sf::Color::Black);
 
 
-        //currentAngle += 0.5f;
+
+        currentYAngle += 20.f;
 
         utils::Mesh::VerticesContainer trianglesToDraw;
 
@@ -75,7 +76,6 @@ int main()
             /*SET ROTATION MATRIX*/
             rotationX.setRotationX(currentXAngle);
             rotationY.setRotationY(currentYAngle);
-
 
             /*ROTATION AROUND Y THEN TRANSLATION BY Z AXIS*/
             utils::Matrix4x4 finalTransform = utils::Matrix4x4{ {1,0,0,0}, {0,1,0,0}, {0,0,1,1.f}, {0,0,0,1} } * rotationY;
@@ -90,7 +90,6 @@ int main()
             normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
             /*------------------------------------------------------*/
 
-            currentYAngle += (currentYAngle > 360.f) ? (currentYAngle = 0.f) : 0.001f;
 
             /*SET THE VECTOR FROM TRIANGLE PT TO CAMERA(0,0,0) IN ORDER TO DO 'CULLING'*/
             utils::Vector3D lineFromCam = translated[0].coordinates;
@@ -124,8 +123,8 @@ int main()
                     {0, 0, 1, 0},
                     {0, 0, 0, 1}
                 } * utils::Matrix4x4 {
-                    {2.f*static_cast<float>(window.getSize().x), 0, 0, 0}, 
-                    {0, 2.f*static_cast<float>(window.getSize().y), 0, 0}, 
+                    {4.f*static_cast<float>(window.getSize().x), 0, 0, 0}, 
+                    {0, 4.f*static_cast<float>(window.getSize().y), 0, 0}, 
                     {0, 0, 1, 0}, 
                     {0,0,0,1} 
                 };
