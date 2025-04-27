@@ -14,7 +14,7 @@ namespace {
 
 namespace manager {
 
-	FileManager::Status FileManager::readVertex(std::string fp, utils::Mesh &mesh) {
+	FileManager::Status FileManager::readVertex(std::string fp, utils::Mesh &mesh, utils::Color defCol) {
 		std::ifstream is{ fp };
 		if (!is) {
 			return Status::FILE_OPEN_ERR;
@@ -41,7 +41,7 @@ namespace manager {
 
 		}
 
-		mesh = utils::Mesh(vertices, verticeIdx);
+		mesh = utils::Mesh(vertices, verticeIdx, defCol);
 
 
 		return Status::READ_OK;

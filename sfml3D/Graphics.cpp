@@ -2,16 +2,18 @@
 #include <SFML/Graphics.hpp>
 
 namespace Render {
-    void Graphics::drawTriangle(sf::RenderWindow& context, utils::Mesh::Vertices const& vertices, sf::Uint8 colVal, DrawMode mode) {
+    void Graphics::drawTriangle(sf::RenderWindow& context, utils::Mesh::Vertices const& vertices, DrawMode mode) {
         std::vector<sf::Vertex> triangleVertices = {
             sf::Vertex{sf::Vector2f(vertices[0].coordinates.x, vertices[0].coordinates.y)},
             sf::Vertex{sf::Vector2f(vertices[1].coordinates.x, vertices[1].coordinates.y)},
             sf::Vertex{sf::Vector2f(vertices[2].coordinates.x, vertices[2].coordinates.y)}
         };
 
-        triangleVertices[0].color = sf::Color{ colVal, colVal, colVal, 255 };
-        triangleVertices[1].color = sf::Color{ colVal, colVal, colVal, 255 };
-        triangleVertices[2].color = sf::Color{ colVal, colVal, colVal, 255 };
+        
+
+        triangleVertices[0].color = static_cast<sf::Color>(vertices[0].colorVal);
+        triangleVertices[1].color = static_cast<sf::Color>(vertices[1].colorVal);
+        triangleVertices[2].color = static_cast<sf::Color>(vertices[2].colorVal);
 
         switch (mode) {
         case TRIANGLE:

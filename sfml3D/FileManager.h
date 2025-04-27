@@ -13,7 +13,7 @@ namespace manager {
 				FILE_OPEN_ERR
 			};
 
-			static Status readVertex(std::string fp, utils::Mesh &mesh);
+			static Status readVertex(std::string fp, utils::Mesh& mesh, utils::Color defCol);
 
 
 	};

@@ -13,7 +13,7 @@ namespace tests {
 	using namespace utils;
 	inline void testFileReader() {
 		Mesh testMesh{};
-		assert (manager::FileManager::readVertex("./Assets/mesh1.obj", testMesh) == FileManager::READ_OK && "File Read OK");
+		assert (manager::FileManager::readVertex("./Assets/mesh1.obj", testMesh, Color{}) == FileManager::READ_OK && "File Read OK");
 	}
 	inline void vec3DTests() {
 		Vector3D a{ 3, 1, 0 }, b{ 1, 2, 5 };

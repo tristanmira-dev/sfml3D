@@ -3,6 +3,7 @@
 #include "Matrix.h"
 #include "Mesh.h"
 #include "Graphics.h"
+#include "Color.h"
 #include "CommonUtils.h"
 #include "FileManager.h"
 #include <iostream>
@@ -36,7 +37,7 @@ int main()
 
     utils::Mesh tris{};
 
-    manager::FileManager::readVertex("./Assets/kindred_sketchfab1.obj", tris);
+    manager::FileManager::readVertex("./Assets/kindred_sketchfab1.obj", tris, utils::Color{0.f, 255.f, 255.f, 255.f});
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
@@ -65,6 +66,7 @@ int main()
 
 
         currentYAngle += 20.f;
+        //currentXAngle += 0.1f;
 
         utils::Mesh::VerticesContainer trianglesToDraw;
 
@@ -90,16 +92,16 @@ int main()
             normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
             /*------------------------------------------------------*/
 
-
+            /*TODO DYNAMIC CAMERA*/
             /*SET THE VECTOR FROM TRIANGLE PT TO CAMERA(0,0,0) IN ORDER TO DO 'CULLING'*/
-            utils::Vector3D lineFromCam = translated[0].coordinates;
+            utils::Vector3D lineFromCam = translated[0].coordinates /* - Camera Position (Currently at 0,0,0)*/;
 
             /*CHECK IF THE ANGLE BETWEEN THE NORMAL AND VECTOR FROM CAM IS NEGATIVE(IN FRONT OF THE BACK) THEN CONTINUE WITH PERSPECTIVE PROJECTION*/
             if (lineFromCam.dot(normal) < 0.0f) {
 
-                projected.push_back({ mtx.pMultiply(translated[0].coordinates) });
-                projected.push_back({ mtx.pMultiply(translated[1].coordinates) });
-                projected.push_back({ mtx.pMultiply(translated[2].coordinates) });
+                projected.push_back({ mtx.pMultiply(translated[0].coordinates), translated[0].colorVal});
+                projected.push_back({ mtx.pMultiply(translated[1].coordinates), translated[1].colorVal});
+                projected.push_back({ mtx.pMultiply(translated[2].coordinates), translated[2].colorVal});
 
                 normal.normalize();
                 
@@ -132,9 +134,10 @@ int main()
                 utils::Mesh::transformVertice(transform2, projected);
 
                 
-                projected[0].colorVal = dist * 255.f;
-                projected[1].colorVal = dist * 255.f;
-                projected[2].colorVal = dist * 255.f;
+                /*TODO FIX LIGHT CALCULATION*/
+                projected[0].colorVal = projected[0].colorVal * dist;
+                projected[1].colorVal = projected[1].colorVal * dist;
+                projected[2].colorVal = projected[2].colorVal * dist;
 
                 trianglesToDraw.push_back(projected);
 
@@ -147,7 +150,7 @@ int main()
         std::sort(trianglesToDraw.begin(), trianglesToDraw.end(), SortCriterion{});
 
         for (const utils::Mesh::Vertices& vertices : trianglesToDraw) {
-            Render::Graphics::drawTriangle(window, vertices, static_cast<sf::Uint8>(vertices[0].colorVal));
+            Render::Graphics::drawTriangle(window, vertices);
         }
 
         window.display();

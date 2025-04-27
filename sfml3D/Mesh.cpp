@@ -1,10 +1,11 @@
 #include "Mesh.h"
+#include "Color.h"
 
 namespace utils {
 	
 
 	/*READ INDEXES CONTAINED IN A VECTOR OF INDEXES(srcIdx) FROM SRC VERTICE*/
-	Mesh::Mesh(Vertices const& srcVertice, std::vector<VerticeIdx> const& srcIdx) {
+	Mesh::Mesh(Vertices const& srcVertice, std::vector<VerticeIdx> const& srcIdx, Color defaultCol) {
 		for (const VerticeIdx& verticeIdx : srcIdx) {
 			Vertices vertices;
 			vertices.reserve(3);
@@ -12,10 +13,8 @@ namespace utils {
 				vertices.push_back(
 
 					{
-
 						Vector3D{ srcVertice[idx].coordinates.x, srcVertice[idx].coordinates.y, srcVertice[idx].coordinates.z },
-						0.0f
-					
+						defaultCol
 					}
 				
 				);
@@ -41,8 +40,7 @@ namespace utils {
 							tempCoordinates[0],
 							tempCoordinates[1],
 							val
-							},
-							0.0f
+							}
 						});
 
 
@@ -64,5 +62,5 @@ namespace utils {
 		vertices[1].coordinates = mtx * vertices[1].coordinates;
 		vertices[2].coordinates = mtx * vertices[2].coordinates;
 	}
-	VertexData::VertexData(Vector3D coordinates, float colorVal) : coordinates{ coordinates }, colorVal{colorVal} { /*EMPTY*/ }
+	VertexData::VertexData(Vector3D coordinates, Color colorVal) : coordinates{ coordinates }, colorVal{colorVal} { /*EMPTY*/ }
 }

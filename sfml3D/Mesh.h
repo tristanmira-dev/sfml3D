@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include "Vector3D.h"
 #include "Matrix.h"
+#include "Color.h"
 
 
 
@@ -12,9 +13,9 @@ namespace utils {
 
 	struct VertexData {
 		Vector3D coordinates;
-		float colorVal;
+		Color colorVal;
 
-		VertexData(Vector3D coordinates, float colorVal = 0.f);
+		VertexData(Vector3D coordinates, Color colorVal = Color{});
 	};
 
 
@@ -26,7 +27,7 @@ namespace utils {
 		VerticesContainer verticesContainer;
 
 		Mesh() = default;
-		Mesh(Vertices const &srcVertice, std::vector<VerticeIdx> const &srcIdx);
+		Mesh(Vertices const& srcVertice, std::vector<VerticeIdx> const& srcIdx, Color defaultCol);
 		Mesh& operator=(Init_List src);
 		static void transformVertice(Matrix4x4& mtx, Vertices& vertices);
 	};
