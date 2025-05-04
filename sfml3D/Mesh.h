@@ -11,6 +11,8 @@
 
 namespace utils {
 
+	struct Mesh;
+
 	struct VertexData {
 		Vector3D coordinates;
 		Color colorVal;
@@ -18,11 +20,28 @@ namespace utils {
 		VertexData(Vector3D coordinates, Color colorVal = Color{});
 	};
 
+	struct VerticeData {
+		Vector3D normal;
+		VerticeData(Vector3D normal = { 0.f, 0.f, 0.f }) : normal{ normal } {};
+	};
+
+	//CONTAINER: CONTAINS 3 VERTICES TO MAKE UP A TRIANGLE FACE, data(MORE METADATA ABOUT THE 3 VERTICES)
+	struct VerticesContainerData { 
+		std::vector<VertexData> container; //STL VECTOR CONTAINER OF VERTICES STORED IN CLOCKWISE MANNER 
+		VerticeData data;
+
+		VerticesContainerData(std::vector<VertexData> const&container, VerticeData data) : container{container}, data{data} {};
+	};
+
+	struct VerticesContainer {
+		std::vector<VerticesContainerData> data;
+
+		VerticesContainer() : data{} {};
+	};
 
 	struct Mesh {
 		using Init_List = std::initializer_list<std::initializer_list<float>>;
 		using Vertices = std::vector<VertexData>; //STL VECTOR CONTAINER OF COORDINATES OF VERTICES
-		using VerticesContainer = std::vector<Vertices>; //STL VECTOR CONTAINER OF VERTICES STORED IN CLOCKWISE MANNER 
 		using VerticeIdx = std::vector<int>;
 		VerticesContainer verticesContainer;
 

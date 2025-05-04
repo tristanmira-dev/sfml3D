@@ -146,6 +146,7 @@
     <ClCompile Include="Matrix.cpp" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObject_T.h" />
     <ClInclude Include="Matrix.h" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Vector2D.cpp" />

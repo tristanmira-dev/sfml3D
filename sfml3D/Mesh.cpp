@@ -19,7 +19,7 @@ namespace utils {
 				
 				);
 			}
-			this->verticesContainer.push_back(vertices);
+			this->verticesContainer.data.push_back({ vertices, utils::VerticeData{} });
 		}
 
 	}
@@ -52,7 +52,7 @@ namespace utils {
 
 				idx++;
 			}
-			verticesContainer.push_back(vertices);
+			verticesContainer.data.push_back({ vertices, utils::VerticeData{} });
 		}
 		
 		return *this;

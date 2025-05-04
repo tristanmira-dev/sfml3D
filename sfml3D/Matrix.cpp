@@ -82,6 +82,19 @@ namespace utils {
 		};
 	}
 
+	/*Perspective matrix multiplication with vector CONST*/
+	Vector3D Matrix4x4::pMultiply(Vector3D const& vec) const {
+		float w = ((*this)(3, 0) * vec.x + (*this)(3, 1) * vec.y + (*this)(3, 2) * vec.z + (*this)(3, 3) * 1);
+
+		w = (w == 0.0f ? 1.0f : w);
+
+		return Vector3D{
+			((*this)(0,0) * vec.x + (*this)(0,1) * vec.y + (*this)(0,2) * vec.z) / w,
+			((*this)(1,0) * vec.x + (*this)(1,1) * vec.y + (*this)(1,2) * vec.z) / w,
+			((*this)(2,0) * vec.x + (*this)(2,1) * vec.y + (*this)(2,2) * vec.z + (*this)(2,3)) / w
+		};
+	}
+
 	Vector3D Matrix4x4::operator*(Vector3D const& vec) {
 		/*float w = ((*this)(3, 0) * vec.x + (*this)(3, 1) * vec.y + (*this)(3, 2) * vec.z + (*this)(3, 3) * 1);
 

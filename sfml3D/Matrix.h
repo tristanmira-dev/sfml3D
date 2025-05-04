@@ -7,14 +7,7 @@
 #include <ostream>
 #include "Vector3D.h"
 
-/*	
-	TODO
-	1.OPERATOR OVERLOAD FOR CONCATENATING MATRIX
 
-
-
-*/
-	
 namespace utils {
 
 	/* Matrix multiplication order following -> Matrix * column matrix */
@@ -33,6 +26,7 @@ namespace utils {
 
 		/*Perspective Matrix multiplication*/
 		Vector3D pMultiply(Vector3D const& vec);
+		Vector3D pMultiply(Vector3D const& vec) const;
 
 		//Setters for Special Matrices
 		void setProjectionMatrix(sf::RenderWindow const& context, float fNear, float fFar, float fFov);
