@@ -11,8 +11,6 @@
 
 namespace utils {
 
-	struct Mesh;
-
 	struct VertexData {
 		Vector3D coordinates;
 		Color colorVal;
@@ -33,16 +31,14 @@ namespace utils {
 		VerticesContainerData(std::vector<VertexData> const&container, VerticeData data) : container{container}, data{data} {};
 	};
 
-	struct VerticesContainer {
-		std::vector<VerticesContainerData> data;
-
-		VerticesContainer() : data{} {};
-	};
-
 	struct Mesh {
 		using Init_List = std::initializer_list<std::initializer_list<float>>;
 		using Vertices = std::vector<VertexData>; //STL VECTOR CONTAINER OF COORDINATES OF VERTICES
 		using VerticeIdx = std::vector<int>;
+		using VerticesContainer = std::vector<VerticesContainerData>;
+
+
+
 		VerticesContainer verticesContainer;
 
 		Mesh() = default;

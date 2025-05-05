@@ -32,29 +32,28 @@ GameObject<numOfMesh>::GameObject(std::initializer_list<EntityInitializer> initL
 	}
 }
 
+
 template<int numOfMesh>
-inline void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx) {
+void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx) {
 
 
 	for (ModelData& modelData : model) {
 
-		modelData.props.verticesToRender = utils::VerticesContainer{};
-		for (utils::VerticesContainerData const& vertices : modelData.mesh.verticesContainer.data) {
+		modelData.props.verticesToRender = utils::Mesh::VerticesContainer{};
+		for (utils::VerticesContainerData& vertices : modelData.mesh.verticesContainer) {
 			utils::Mesh::Vertices translated = vertices.container;
 			utils::Mesh::Vertices projected;
 
-
 			/*ROTATION AROUND Y THEN TRANSLATION BY Z AXIS*/
-			utils::Matrix4x4 finalTransform = utils::Matrix4x4{ {1,0,0,0}, {0,1,0,0}, {0,0,1,1.f}, {0,0,0,1} };
-			utils::Mesh::transformVertice(finalTransform, translated);
+			utils::Mesh::transformVertice(modelData.props.transformation, translated);
 			/*-------------------------------*/
 
-			utils::Vector3D vec1, vec2, normal;
+			utils::Vector3D vec1, vec2;
 
 			/*CALCULATE THE NORMAL OF EACH TRIANGLE FACE IN THE PLANE*/
 			vec1 = translated[1].coordinates - translated[0].coordinates;
 			vec2 = translated[2].coordinates - translated[0].coordinates;
-			normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
+			vertices.data.normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
 			/*------------------------------------------------------*/
 
             /*TODO DYNAMIC CAMERA*/
@@ -62,13 +61,13 @@ inline void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& contex
             utils::Vector3D lineFromCam = translated[0].coordinates /* - Camera Position (Currently at 0,0,0)*/;
 
             /*CHECK IF THE ANGLE BETWEEN THE NORMAL AND VECTOR FROM CAM IS NEGATIVE(IN FRONT OF THE BACK) THEN CONTINUE WITH PERSPECTIVE PROJECTION*/
-            if (lineFromCam.dot(normal) < 0.0f) {
+            if (vertices.data.normal.dot(lineFromCam) < 0.0f) {
 
                 projected.push_back({ projectionMtx.pMultiply(translated[0].coordinates), translated[0].colorVal });
                 projected.push_back({ projectionMtx.pMultiply(translated[1].coordinates), translated[1].colorVal });
                 projected.push_back({ projectionMtx.pMultiply(translated[2].coordinates), translated[2].colorVal });
 
-                normal.normalize();
+                vertices.data.normal.normalize();
 
 
                 utils::Vector3D light{
@@ -76,9 +75,8 @@ inline void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& contex
                     0.f,
                     1.0f
                 };
-                //light.normalize();
 
-                float dist{ std::fabs(normal.dot(light)) };
+                float dist{ std::fabs(vertices.data.normal.dot(light)) };
 
                 float halfDistX{ context.getSize().x * 0.5f };
                 float halfDistY{ context.getSize().y * 0.5f };
@@ -89,9 +87,9 @@ inline void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& contex
                     {0, 1, 0, halfDistY},
                     {0, 0, 1, 0},
                     {0, 0, 0, 1}
-                } *utils::Matrix4x4{
-                    {4.f * static_cast<float>(context.getSize().x), 0, 0, 0},
-                    {0, 4.f * static_cast<float>(context.getSize().y), 0, 0},
+                } * utils::Matrix4x4{
+                    {static_cast<float>(context.getSize().x), 0, 0, 0},
+                    {0, static_cast<float>(context.getSize().y), 0, 0},
                     {0, 0, 1, 0},
                     {0,0,0,1}
                 };
@@ -104,7 +102,7 @@ inline void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& contex
                 projected[1].colorVal = projected[1].colorVal * dist;
                 projected[2].colorVal = projected[2].colorVal * dist;
 
-				modelData.props.verticesToRender.data.push_back(utils::VerticesContainerData{
+				modelData.props.verticesToRender.push_back(utils::VerticesContainerData{
 					projected,
 					utils::VerticeData{}
 				});
@@ -117,18 +115,24 @@ inline void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& contex
 }
 
 template<int numOfMesh>
-inline void Entity::GameObject<numOfMesh>::draw(sf::RenderWindow &context, utils::Matrix4x4 const& projectionMtx) {
+void Entity::GameObject<numOfMesh>::draw(sf::RenderWindow &context, utils::Matrix4x4 const& projectionMtx) {
 	prepToRender(context, projectionMtx);
 
 	for (ModelData &modelData : model) {
 		/*SORT THE PROJECTED VERTICES STARTING FROM THE VERTICES WITH A LARGER Z VALUE(GOING FURTHER FROM PLAYER)
 		TO THE VERTICES WITH THE SMALLER Z VALUE(GOING TOWARDS PLAYER) TO DRAW THE VERTICES BEHIND FIRST*/
-		std::sort(modelData.props.verticesToRender.data.begin(), modelData.props.verticesToRender.data.end(), SortCriterion{});
+		std::sort(modelData.props.verticesToRender.begin(), modelData.props.verticesToRender.end(), SortCriterion{});
 
-		for (utils::VerticesContainerData& vertices : modelData.props.verticesToRender.data) {
+		for (utils::VerticesContainerData& vertices : modelData.props.verticesToRender) {
 			Render::Graphics::drawTriangle(context, vertices.container);
 		}
 	}
 
 	
+}
+
+template<int numOfMesh>
+ModelData& Entity::GameObject<numOfMesh>::operator[](int idx)
+{
+	return model[idx];
 }

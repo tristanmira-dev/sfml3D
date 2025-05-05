@@ -11,15 +11,18 @@
 
 /*TODO ALLOW A SIMPLE INTERFACE 3D OBJECTS WITH*/
 
-namespace {
+namespace Entity {
 	struct ModelData {
 		utils::Mesh mesh;
 		struct Properties {
 			utils::Vector3D prevPosition;
 			utils::Vector3D position;
-			utils::VerticesContainer verticesToRender;
+			utils::Mesh::VerticesContainer verticesToRender;
 			utils::Matrix4x4 transformation;
 		} props;
+
+		void setTransform(utils::Matrix4x4 const& transform);
+
 	};
 }
 
@@ -39,6 +42,9 @@ namespace Entity {
 			void prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx);
 
 			void draw(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx);
+
+			ModelData& operator[](int idx);
+
 
 
 		private:
