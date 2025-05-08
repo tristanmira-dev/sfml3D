@@ -62,5 +62,11 @@ namespace utils {
 		vertices[1].coordinates = mtx * vertices[1].coordinates;
 		vertices[2].coordinates = mtx * vertices[2].coordinates;
 	}
+
+	void Mesh::transformVertice(Matrix4x4 const& mtx, Vertices& vertices) {
+		vertices[0].coordinates = mtx * vertices[0].coordinates;
+		vertices[1].coordinates = mtx * vertices[1].coordinates;
+		vertices[2].coordinates = mtx * vertices[2].coordinates;
+	}
 	VertexData::VertexData(Vector3D coordinates, Color colorVal) : coordinates{ coordinates }, colorVal{colorVal} { /*EMPTY*/ }
 }

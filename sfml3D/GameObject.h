@@ -6,6 +6,7 @@
 #include "Vector3D.h"
 #include "Matrix.h"
 #include "Color.h"
+#include "Camera.h"
 #include <string>
 #include <initializer_list>
 
@@ -37,7 +38,7 @@ namespace Entity {
 	class GameObject {
 		public:
 			utils::Vector3D getCurrentPosition();
-			GameObject(std::initializer_list<EntityInitializer> initList);
+			GameObject(std::initializer_list<EntityInitializer> initList, utils::Camera &camera);
 
 			void prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx);
 
@@ -49,12 +50,13 @@ namespace Entity {
 
 		private:
 			std::array<ModelData, numOfMesh> model;
+			utils::Camera &camera;
 			
 	};
-	
-	#include "GameObject_T.h"
 
 }
+
+#include "GameObject_T.h"
 
 
 #endif

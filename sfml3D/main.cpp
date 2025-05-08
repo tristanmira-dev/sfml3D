@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Graphics.h"
 #include "Color.h"
+#include "Camera.h"
 #include "CommonUtils.h"
 #include "GameObject.h"
 #include "FileManager.h"
@@ -23,19 +24,27 @@ int main() {
     utils::Matrix4x4 rotationX{};
     utils::Matrix4x4 rotationY{};
 
+    utils::Camera camera{ utils::Vector3D{0.f, 0.f, 0.f} };
+
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
 
 
     mtx.setProjectionMatrix(window, 0.1f, 1000.0f, 30.0f);
 
-    Entity::GameObject<1> model1{ {"./Assets/Suzanne.obj" , utils::Color{255.f, 255.f, 255.f, 255.f}} };
+    Entity::GameObject<1> model1{ 
+        std::initializer_list<Entity::EntityInitializer>{
+            Entity::EntityInitializer{
+                "./Assets/Suzanne.obj" , 
+                utils::Color{255.f, 255.f, 255.f, 255.f}
+            }
+        }, 
+        camera 
+    };
 
     /*float currentXAngle = 50.0f;
     float currentYAngle = 0.0f;*/
 
-    float currentXPos{ 0.f };
-    float currentZPos{ 15.f };
 
 
     // run the program as long as the window is open
@@ -50,28 +59,30 @@ int main() {
                 window.close();
         }
 
+        utils::Vector3D currentCameraLoc{ camera.getPosition() };
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)) {
-            currentXPos -= 0.2f;
+            camera.translate(currentCameraLoc.x + 0.5f, currentCameraLoc.y, currentCameraLoc.z);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)) {
-            currentXPos += 0.2f;
+            camera.translate(currentCameraLoc.x - 0.5f, currentCameraLoc.y, currentCameraLoc.z);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)) {
-            currentZPos -= 0.2f;
+            camera.translate(currentCameraLoc.x, currentCameraLoc.y, currentCameraLoc.z + 0.5f);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)) {
-            currentZPos += 0.2f;
+            camera.translate(currentCameraLoc.x, currentCameraLoc.y, currentCameraLoc.z - 0.5f);
         }
 
 
-        utils::Matrix4x4 translate = {
-            {1,0,0,currentXPos}, {0,1,0,0.f}, {0,0,1,currentZPos}, {0,0,0,1}
+        utils::Matrix4x4 translateGameObj = {
+            {1,0,0,0.f}, {0,1,0,0.f}, {0,0,1,8.f}, {0,0,0,1}
         };
 
         rotationY.setRotationX(180.f);
 
-        model1[0].setTransform(translate * rotationY);
+        model1[0].setTransform(translateGameObj * rotationY);
 
         // clear the window with black color
         window.clear(sf::Color::Black);

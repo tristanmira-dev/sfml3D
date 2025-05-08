@@ -35,6 +35,7 @@ namespace utils {
 		float& operator()(std::size_t row, std::size_t column);
 		float const& operator()(std::size_t row, std::size_t column) const;
 		Vector3D operator*(Vector3D const& vec);
+		Vector3D operator*(Vector3D const& vec) const;
 		Matrix4x4 operator*(Matrix4x4 const& mtx);
 		bool operator==(Matrix4x4 const &);
 		bool operator==(float const (&arr)[16]);

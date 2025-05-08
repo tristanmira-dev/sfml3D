@@ -45,6 +45,7 @@ namespace utils {
 		Mesh(Vertices const& srcVertice, std::vector<VerticeIdx> const& srcIdx, Color defaultCol);
 		Mesh& operator=(Init_List src);
 		static void transformVertice(Matrix4x4& mtx, Vertices& vertices);
+		static void transformVertice(Matrix4x4 const& mtx, Vertices& vertices);
 	};
 
 }

@@ -107,6 +107,14 @@ namespace utils {
 		};
 	}
 
+	Vector3D Matrix4x4::operator*(Vector3D const& vec) const {
+		return Vector3D{
+			((*this)(0,0) * vec.x + (*this)(0,1) * vec.y + (*this)(0,2) * vec.z + (*this)(0,3)),
+			((*this)(1,0) * vec.x + (*this)(1,1) * vec.y + (*this)(1,2) * vec.z + (*this)(1,3)),
+			((*this)(2,0) * vec.x + (*this)(2,1) * vec.y + (*this)(2,2) * vec.z + (*this)(2,3))
+		};;
+	}
+
 	Matrix4x4 Matrix4x4::operator*(Matrix4x4 const& mtx)
 	{
 		Matrix4x4 newMtx;
