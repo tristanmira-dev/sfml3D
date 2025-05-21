@@ -42,6 +42,16 @@ int main() {
         camera 
     };
 
+    Entity::GameObject<1> model2{
+        std::initializer_list<Entity::EntityInitializer>{
+            Entity::EntityInitializer{
+                "./Assets/Suzanne.obj" ,
+                utils::Color{255.f, 255.f, 255.f, 255.f}
+            }
+        },
+        camera
+    };
+
     /*float currentXAngle = 50.0f;
     float currentYAngle = 0.0f;*/
 
@@ -62,17 +72,17 @@ int main() {
         utils::Vector3D currentCameraLoc{ camera.getPosition() };
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)) {
-            camera.translate(currentCameraLoc.x + 0.5f, currentCameraLoc.y, currentCameraLoc.z);
+            camera.translateRight(0.5f);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)) {
-            camera.translate(currentCameraLoc.x - 0.5f, currentCameraLoc.y, currentCameraLoc.z);
+            camera.translateRight(-0.5f);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)) {
-            camera.translate(currentCameraLoc.x, currentCameraLoc.y, currentCameraLoc.z + 0.5f);
+            camera.translateForward(0.5f);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)) {
-            camera.translate(currentCameraLoc.x, currentCameraLoc.y, currentCameraLoc.z - 0.5f);
+            camera.translateForward(-0.5f);
         }
 
 
@@ -80,15 +90,23 @@ int main() {
             {1,0,0,0.f}, {0,1,0,0.f}, {0,0,1,8.f}, {0,0,0,1}
         };
 
+        utils::Matrix4x4 translateGameObj2 = {
+            {1,0,0,3.f}, {0,1,0,0.f}, {0,0,1,8.f}, {0,0,0,1}
+        };
+
         rotationY.setRotationX(180.f);
 
         model1[0].setTransform(translateGameObj * rotationY);
+
+        model2[0].setTransform(translateGameObj2 * rotationY);
 
         // clear the window with black color
         window.clear(sf::Color::Black);
 
 
+        model2.draw(window, mtx);
         model1.draw(window, mtx);
+
 
         window.display();
     }

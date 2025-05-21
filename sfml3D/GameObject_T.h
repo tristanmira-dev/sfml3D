@@ -2,7 +2,10 @@
 #include "GameObject.h"
 #include "Graphics.h"
 #include "Camera.h"
+#include "Plane.h"
 #include "Mesh.h"
+#include <array>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 namespace Entity {
@@ -43,81 +46,97 @@ namespace Entity {
 
 			modelData.props.verticesToRender = utils::Mesh::VerticesContainer{};
 			for (utils::VerticesContainerData& vertices : modelData.mesh.verticesContainer) {
-				utils::Mesh::Vertices translated = vertices.container;
-				utils::Mesh::Vertices projected;
+				utils::VerticesContainerData translated = vertices;
+				utils::VerticesContainerData projected;
 
 
 
 				/*ROTATION AROUND Y THEN TRANSLATION BY Z AXIS*/
-				utils::Mesh::transformVertice(modelData.props.transformation, translated);
+				utils::Mesh::transformVertice(modelData.props.transformation, translated.container);
 				/*-------------------------------*/
 
-				/*CAMERA TRANSFORM*/
-				utils::Mesh::transformVertice(camera.getTransformation(), translated);
-				/*-------------------------------*/
 
+				/*USED FOR CALCULATING THE NORMAL*/
 				utils::Vector3D vec1, vec2;
 
 				/*CALCULATE THE NORMAL OF EACH TRIANGLE FACE IN THE PLANE*/
-				vec1 = translated[1].coordinates - translated[0].coordinates;
-				vec2 = translated[2].coordinates - translated[0].coordinates;
+				vec1 = translated.container[1].coordinates - translated.container[0].coordinates;
+				vec2 = translated.container[2].coordinates - translated.container[0].coordinates;
 				vertices.data.normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
 				/*------------------------------------------------------*/
 
-				/*TODO DYNAMIC CAMERA*/
+				/*CALCULATE VECTOR FORMED FROM CAMERA TO VERTEX IN WORLD SPACE (LINE FROM CAMERA TO CURRENT VERTICE)*/
 				/*SET THE VECTOR FROM TRIANGLE PT TO CAMERA(0,0,0) IN ORDER TO DO 'CULLING'*/
-				utils::Vector3D lineFromCam = translated[0].coordinates /* - Camera Position (Currently at 0,0,0)*/;
+				utils::Vector3D lineFromCam = translated.container[0].coordinates - camera.getPosition();
 
 
 
-				/*CHECK IF THE ANGLE BETWEEN THE NORMAL AND VECTOR FROM CAM IS NEGATIVE(IN FRONT OF THE BACK) THEN CONTINUE WITH PERSPECTIVE PROJECTION*/
-				if (vertices.data.normal.dot(lineFromCam) < 0.0f) {
 
-					projected.push_back({ projectionMtx.pMultiply(translated[0].coordinates), translated[0].colorVal });
-					projected.push_back({ projectionMtx.pMultiply(translated[1].coordinates), translated[1].colorVal });
-					projected.push_back({ projectionMtx.pMultiply(translated[2].coordinates), translated[2].colorVal });
-
-					vertices.data.normal.normalize();
+				/*CAMERA TRANSFORM*/
+				utils::Mesh::transformVertice(camera.getTransformation(), translated.container);
+				/*-------------------------------*/
 
 
-					utils::Vector3D light{
-						0.f,
-						0.f,
-						1.0f
-					};
+				/*CLIPPING*/
+				std::array<utils::VerticesContainerData, 2> trianglesFormed{};
+				trianglesFormed[0].container.resize(3);
+				trianglesFormed[1].container.resize(3);
 
-					float dist{ std::fabs(vertices.data.normal.dot(light)) };
 
-					float halfDistX{ context.getSize().x * 0.5f };
-					float halfDistY{ context.getSize().y * 0.5f };
+				utils::triClipAgainstPlane(utils::Vector3D{ 0.f, 0.f, 0.1f }, utils::Vector3D{ 0.f,0.f,1.f }, translated, trianglesFormed[0], trianglesFormed[1]);
 
-					/*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
-					utils::Matrix4x4 transform2 = utils::Matrix4x4{
-						{1, 0, 0, halfDistX},
-						{0, 1, 0, halfDistY},
-						{0, 0, 1, 0},
-						{0, 0, 0, 1}
-					} * utils::Matrix4x4{
-						{static_cast<float>(context.getSize().x), 0, 0, 0},
-						{0, static_cast<float>(context.getSize().y), 0, 0},
-						{0, 0, 1, 0},
-						{0,0,0,1}
-					};
+				for (int n{}; n < 2; ++n) {
+					if (vertices.data.normal.dot(lineFromCam) < 0.0f) {
 
-					utils::Mesh::transformVertice(transform2, projected);
-					
+						projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[0].coordinates), trianglesFormed[n].container[0].colorVal });
+						projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[1].coordinates), trianglesFormed[n].container[1].colorVal });
+						projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[2].coordinates), trianglesFormed[n].container[2].colorVal });
 
-					/*TODO FIX LIGHT CALCULATION*/
-					projected[0].colorVal = projected[0].colorVal * dist;
-					projected[1].colorVal = projected[1].colorVal * dist;
-					projected[2].colorVal = projected[2].colorVal * dist;
+						vertices.data.normal.normalize();
 
-					modelData.props.verticesToRender.push_back(utils::VerticesContainerData{
-						projected,
-						utils::VerticeData{}
-						});
 
+						utils::Vector3D light{
+							0.f,
+							0.f,
+							1.0f
+						};
+
+						float dist{ std::fabs(vertices.data.normal.dot(light)) };
+
+						float halfDistX{ context.getSize().x * 0.5f };
+						float halfDistY{ context.getSize().y * 0.5f };
+
+						/*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
+						utils::Matrix4x4 transform2 = utils::Matrix4x4{
+							{1, 0, 0, halfDistX},
+							{0, 1, 0, halfDistY},
+							{0, 0, 1, 0},
+							{0, 0, 0, 1}
+						} *utils::Matrix4x4{
+							{static_cast<float>(context.getSize().x), 0, 0, 0},
+							{0, static_cast<float>(context.getSize().y), 0, 0},
+							{0, 0, 1, 0},
+							{0,0,0,1}
+						};
+
+						utils::Mesh::transformVertice(transform2, projected.container);
+
+
+						/*TODO FIX LIGHT CALCULATION*/
+						projected.container[0].colorVal = projected.container[0].colorVal * dist;
+						projected.container[1].colorVal = projected.container[1].colorVal * dist;
+						projected.container[2].colorVal = projected.container[2].colorVal * dist;
+
+						modelData.props.verticesToRender.push_back(utils::VerticesContainerData{
+							projected.container,
+							utils::VerticeData{}
+							});
+
+					}
 				}
+
+
+
 
 			}
 		}

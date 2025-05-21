@@ -30,6 +30,9 @@ namespace utils {
 
 		//Setters for Special Matrices
 		void setProjectionMatrix(sf::RenderWindow const& context, float fNear, float fFar, float fFov);
+		void setIdentityMatrix();
+		void setTranslationMatrix(float x, float y, float z);
+		void setTranslationMatrix(utils::Vector3D const &src);
 
 		//Array Indexing
 		float& operator()(std::size_t row, std::size_t column);

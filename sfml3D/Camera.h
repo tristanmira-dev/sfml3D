@@ -10,16 +10,22 @@ namespace utils {
 		public:
 			Camera(Vector3D position);
 			Matrix4x4 const& getTransformation();
-			void translate(float x, float y, float z);
+			void translateRight(float x);
+			void translateForward(float z);
 			Vector3D const& getPosition();
+
+			/*REMOVE LATER, JUST TESTING*/
+			void incrementAngle();
 
 		private:
 			Vector3D position;
+			Vector3D N_pointAt;
+			Vector3D V_upVect;
 			Vector3D U;
-			Vector3D V;
-			Vector3D N;
+			Matrix4x4 worldToCamTransformation;
 			Matrix4x4 transformation;
-
+			float cameraHAngle;
+			float cameraVAngle;
 
 	};
 }

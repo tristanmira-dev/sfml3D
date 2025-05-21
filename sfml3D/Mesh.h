@@ -14,8 +14,7 @@ namespace utils {
 	struct VertexData {
 		Vector3D coordinates;
 		Color colorVal;
-
-		VertexData(Vector3D coordinates, Color colorVal = Color{});
+		VertexData(Vector3D coordinates = Vector3D{}, Color colorVal = Color{});
 	};
 
 	struct VerticeData {
@@ -23,11 +22,12 @@ namespace utils {
 		VerticeData(Vector3D normal = { 0.f, 0.f, 0.f }) : normal{ normal } {};
 	};
 
-	//CONTAINER: CONTAINS 3 VERTICES TO MAKE UP A TRIANGLE FACE, data(MORE METADATA ABOUT THE 3 VERTICES)
+	//CONTAINER: CONTAINS 3 VERTICES TO MAKE UP A TRIANGLE FACE (STORED IN CONTAINER MEMBER), data(MORE METADATA ABOUT THE 3 VERTICES)
 	struct VerticesContainerData { 
-		std::vector<VertexData> container; //STL VECTOR CONTAINER OF VERTICES STORED IN CLOCKWISE MANNER 
+		std::vector<VertexData> container; //STL VECTOR CONTAINER OF VERTEX STORED IN CLOCKWISE MANNER 
 		VerticeData data;
 
+		VerticesContainerData() : container{}, data{} { container.reserve(3); };
 		VerticesContainerData(std::vector<VertexData> const&container, VerticeData data) : container{container}, data{data} {};
 	};
 

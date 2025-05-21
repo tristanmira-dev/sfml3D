@@ -15,15 +15,21 @@ namespace utils {
 		Vector3D& operator=(Vector3D const& src) = default;
 		Vector3D& operator+=(Vector3D const& src);
 		Vector3D& operator+=(const float& src);
+		Vector3D operator+(const Vector3D& vec) const;
 		void normalize();
 		float dist();
 		float dot(Vector3D const& vec);
+		float dot(Vector3D const& vec) const;
 		bool operator==(Vector3D const& compare2);
 		Vector3D operator-(Vector3D const& vec2);
+		void quaternionRotation(float angle, Vector3D vector);
+		Vector3D operator-();
 
 		Vector3D cross(const Vector3D& src) const;
 
 	};
+
+	Vector3D operator*(const float& scalar, const utils::Vector3D& src);
 }
 
 #endif

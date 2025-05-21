@@ -38,6 +38,34 @@ namespace utils {
 		
 	}
 
+	void Matrix4x4::setIdentityMatrix() {
+		(*this)(0, 0) = 1.f;
+		(*this)(1, 1) = 1.f;
+		(*this)(2, 2) = 1.f;
+		(*this)(3, 3) = 1.f;
+	}
+
+	void Matrix4x4::setTranslationMatrix(float x, float y, float z) {
+		(*this)(0, 0) = 1.f;
+		(*this)(1, 1) = 1.f;
+		(*this)(2, 2) = 1.f;
+		(*this)(3, 3) = 1.f;
+
+		(*this)(0, 3) = x;
+		(*this)(1, 3) = y;
+		(*this)(2, 3) = z;
+	}
+
+	void Matrix4x4::setTranslationMatrix(utils::Vector3D const& src) {
+		(*this)(0, 0) = 1.f;
+		(*this)(1, 1) = 1.f;
+		(*this)(2, 2) = 1.f;
+		(*this)(3, 3) = 1.f;
+
+		(*this)(0, 3) = src.x;
+		(*this)(1, 3) = src.y;
+		(*this)(2, 3) = src.z;
+	}
 
 	float& Matrix4x4::operator()(std::size_t row, std::size_t column) {
 		return this->m[row * this->rowSize + column];
