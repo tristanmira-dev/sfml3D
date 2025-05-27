@@ -52,6 +52,16 @@ int main() {
         camera
     };
 
+    Entity::GameObject<1> model3{
+        std::initializer_list<Entity::EntityInitializer>{
+            Entity::EntityInitializer{
+                "./Assets/Suzanne.obj" ,
+                utils::Color{255.f, 0.f, 255.f, 255.f}
+            }
+        },
+        camera
+    };
+
     /*float currentXAngle = 50.0f;
     float currentYAngle = 0.0f;*/
 
@@ -85,6 +95,12 @@ int main() {
             camera.translateForward(-0.5f);
         }
 
+        utils::Matrix4x4 translate3{
+            {1.f, 0.f, 0.f, 6.f},
+            {0.f, 1.f, 0.f, 0.f},
+            {0.f, 0.f, 1.f, 8.f},
+            {0.f, 0.f, 0.f, 1.f}
+        };
 
         utils::Matrix4x4 translateGameObj = {
             {1,0,0,0.f}, {0,1,0,0.f}, {0,0,1,8.f}, {0,0,0,1}
@@ -100,12 +116,15 @@ int main() {
 
         model2[0].setTransform(translateGameObj2 * rotationY);
 
+        model3[0].setTransform(translate3 * rotationY);
+
         // clear the window with black color
         window.clear(sf::Color::Black);
 
 
         model2.draw(window, mtx);
         model1.draw(window, mtx);
+        model3.draw(window, mtx);
 
 
         window.display();

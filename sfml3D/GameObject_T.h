@@ -7,6 +7,7 @@
 #include <array>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 namespace Entity {
 	class SortCriterion {
@@ -51,7 +52,7 @@ namespace Entity {
 
 
 
-				/*ROTATION AROUND Y THEN TRANSLATION BY Z AXIS*/
+				/*TRANSFORMATION SET BY USER*/
 				utils::Mesh::transformVertice(modelData.props.transformation, translated.container);
 				/*-------------------------------*/
 
@@ -83,60 +84,114 @@ namespace Entity {
 				trianglesFormed[1].container.resize(3);
 
 
-				utils::triClipAgainstPlane(utils::Vector3D{ 0.f, 0.f, 0.1f }, utils::Vector3D{ 0.f,0.f,1.f }, translated, trianglesFormed[0], trianglesFormed[1]);
+				utils::CLIP_STATUS status{ utils::triClipAgainstPlane(utils::Vector3D{ 0.f, 0.f, 0.1f }, utils::Vector3D{ 0.f,0.f,1.f }, translated, trianglesFormed[0], trianglesFormed[1]) };
 
-				for (int n{}; n < 2; ++n) {
-					if (vertices.data.normal.dot(lineFromCam) < 0.0f) {
+				switch (status) {
+					case utils::CLIP_REJECTED:
+						continue;
 
-						projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[0].coordinates), trianglesFormed[n].container[0].colorVal });
-						projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[1].coordinates), trianglesFormed[n].container[1].colorVal });
-						projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[2].coordinates), trianglesFormed[n].container[2].colorVal });
+					case utils::ONE_TRI_FORMED:
+							if (vertices.data.normal.dot(lineFromCam) < 0.0f) {
 
-						vertices.data.normal.normalize();
+								projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[0].container[0].coordinates), trianglesFormed[0].container[0].colorVal });
+								projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[0].container[1].coordinates), trianglesFormed[0].container[1].colorVal });
+								projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[0].container[2].coordinates), trianglesFormed[0].container[2].colorVal });
 
-
-						utils::Vector3D light{
-							0.f,
-							0.f,
-							1.0f
-						};
-
-						float dist{ std::fabs(vertices.data.normal.dot(light)) };
-
-						float halfDistX{ context.getSize().x * 0.5f };
-						float halfDistY{ context.getSize().y * 0.5f };
-
-						/*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
-						utils::Matrix4x4 transform2 = utils::Matrix4x4{
-							{1, 0, 0, halfDistX},
-							{0, 1, 0, halfDistY},
-							{0, 0, 1, 0},
-							{0, 0, 0, 1}
-						} *utils::Matrix4x4{
-							{static_cast<float>(context.getSize().x), 0, 0, 0},
-							{0, static_cast<float>(context.getSize().y), 0, 0},
-							{0, 0, 1, 0},
-							{0,0,0,1}
-						};
-
-						utils::Mesh::transformVertice(transform2, projected.container);
+								vertices.data.normal.normalize();
 
 
-						/*TODO FIX LIGHT CALCULATION*/
-						projected.container[0].colorVal = projected.container[0].colorVal * dist;
-						projected.container[1].colorVal = projected.container[1].colorVal * dist;
-						projected.container[2].colorVal = projected.container[2].colorVal * dist;
+								utils::Vector3D light{
+									0.f,
+									0.f,
+									1.0f
+								};
 
-						modelData.props.verticesToRender.push_back(utils::VerticesContainerData{
-							projected.container,
-							utils::VerticeData{}
-							});
+								float dist{ std::fabs(vertices.data.normal.dot(light)) };
 
-					}
+								float halfDistX{ context.getSize().x * 0.5f };
+								float halfDistY{ context.getSize().y * 0.5f };
+
+								/*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
+								utils::Matrix4x4 transform2 = utils::Matrix4x4{
+									{1, 0, 0, halfDistX},
+									{0, 1, 0, halfDistY},
+									{0, 0, 1, 0},
+									{0, 0, 0, 1}
+								} *utils::Matrix4x4{
+									{static_cast<float>(context.getSize().x), 0, 0, 0},
+									{0, static_cast<float>(context.getSize().y), 0, 0},
+									{0, 0, 1, 0},
+									{0,0,0,1}
+								};
+
+								utils::Mesh::transformVertice(transform2, projected.container);
+
+
+								/*TODO FIX LIGHT CALCULATION*/
+								projected.container[0].colorVal = projected.container[0].colorVal * dist;
+								projected.container[1].colorVal = projected.container[1].colorVal * dist;
+								projected.container[2].colorVal = projected.container[2].colorVal * dist;
+
+								modelData.props.verticesToRender.push_back(utils::VerticesContainerData{
+									projected.container,
+									utils::VerticeData{}
+									});
+
+							}
+						continue;
+
+					case utils::TWO_TRI_FORMED:
+						for (int n{}; n < 2; ++n) {
+							if (vertices.data.normal.dot(lineFromCam) < 0.0f) {
+
+								projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[0].coordinates), trianglesFormed[n].container[0].colorVal });
+								projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[1].coordinates), trianglesFormed[n].container[1].colorVal });
+								projected.container.push_back({ projectionMtx.pMultiply(trianglesFormed[n].container[2].coordinates), trianglesFormed[n].container[2].colorVal });
+
+								vertices.data.normal.normalize();
+
+
+								utils::Vector3D light{
+									0.f,
+									0.f,
+									1.0f
+								};
+
+								float dist{ std::fabs(vertices.data.normal.dot(light)) };
+
+								float halfDistX{ context.getSize().x * 0.5f };
+								float halfDistY{ context.getSize().y * 0.5f };
+
+								/*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
+								utils::Matrix4x4 transform2 = utils::Matrix4x4{
+									{1, 0, 0, halfDistX},
+									{0, 1, 0, halfDistY},
+									{0, 0, 1, 0},
+									{0, 0, 0, 1}
+								} *utils::Matrix4x4{
+									{static_cast<float>(context.getSize().x), 0, 0, 0},
+									{0, static_cast<float>(context.getSize().y), 0, 0},
+									{0, 0, 1, 0},
+									{0,0,0,1}
+								};
+
+								utils::Mesh::transformVertice(transform2, projected.container);
+
+
+								/*TODO FIX LIGHT CALCULATION*/
+								projected.container[0].colorVal = projected.container[0].colorVal * dist;
+								projected.container[1].colorVal = projected.container[1].colorVal * dist;
+								projected.container[2].colorVal = projected.container[2].colorVal * dist;
+
+								modelData.props.verticesToRender.push_back(utils::VerticesContainerData{
+									projected.container,
+									utils::VerticeData{}
+									});
+
+							}
+						}
+						continue;
 				}
-
-
-
 
 			}
 		}
@@ -147,14 +202,123 @@ namespace Entity {
 	void Entity::GameObject<numOfMesh>::draw(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx) {
 		prepToRender(context, projectionMtx);
 
+		struct planeData {
+			utils::Vector3D normal;
+			utils::Vector3D point;
+
+			planeData(utils::Vector3D normal, utils::Vector3D point) : normal{ normal }, point{ point } {}
+		};
+
+		std::vector<planeData> clippingPlanes{
+			planeData{utils::Vector3D{0.f, 1.f, 0.f}, utils::Vector3D{0.f, 0.f, 0.f}}, //TOP
+			planeData{utils::Vector3D{-1.f, 0.f, 0.f}, utils::Vector3D{(float)context.getSize().x, 0.f, 0.f}}, //RIGHT
+			planeData{utils::Vector3D{1.f, 0.f, 0.f}, utils::Vector3D{0.f, 0.f, 0.f}}, //LEFT
+			planeData{utils::Vector3D{0.f, -1.f, 0.f}, utils::Vector3D{0.f, (float)context.getSize().y, 0.f}} //BOTTOM
+		};
+
+		//std::vector<utils::VerticesContainerData> verticesClipped{};
+		
+
 		for (ModelData& modelData : model) {
 			/*SORT THE PROJECTED VERTICES STARTING FROM THE VERTICES WITH A LARGER Z VALUE(GOING FURTHER FROM PLAYER)
 			TO THE VERTICES WITH THE SMALLER Z VALUE(GOING TOWARDS PLAYER) TO DRAW THE VERTICES BEHIND FIRST*/
 			std::sort(modelData.props.verticesToRender.begin(), modelData.props.verticesToRender.end(), SortCriterion{});
 
-			for (utils::VerticesContainerData& vertices : modelData.props.verticesToRender) {
-				Render::Graphics::drawTriangle(context, vertices.container);
+
+
+			/*
+			
+			foreach vertice : currentVertice {
+				Vector clippedTriangles
+				array containerOfTriangles[2]
+	
+				clipAgains(vertice, plane, containerOfTriangles[0], containerOfTriangles[1])
+				clippedTriangles.push(containerOfTri[0]); clippedTriangles.push(containerOfTri[1]);
+
+				foreach clippingPlanes : plane {
+					newVector
+
+					foreach clippedTriangles : triangles {
+						clipAgains triangle with current plane
+						newVector.push_back(containerOf
+					}
+	
+				}
 			}
+			
+			*/
+
+			for (utils::VerticesContainerData & vertices : modelData.props.verticesToRender) {
+				std::vector<utils::VerticesContainerData> clippedTri;
+
+				std::array<utils::VerticesContainerData, 2> currentTriData;
+				currentTriData[0].container.resize(3);
+				currentTriData[1].container.resize(3);
+
+				utils::CLIP_STATUS clipStatus{ utils::triClipAgainstPlane(clippingPlanes[0].point, clippingPlanes[0].normal, vertices, currentTriData[0], currentTriData[1]) };
+
+				switch (clipStatus) {
+					case utils::CLIP_STATUS::CLIP_REJECTED:
+						//clippedTri.push_back(currentTriData);
+						continue;
+					case utils::CLIP_STATUS::ONE_TRI_FORMED:
+
+						clippedTri.push_back(currentTriData[0]);
+						
+						break;
+					case utils::CLIP_STATUS::TWO_TRI_FORMED:
+
+						clippedTri.push_back(currentTriData[0]);
+						clippedTri.push_back(currentTriData[1]);
+
+						break;
+				}
+
+				for (int i{ 1 }; i < clippingPlanes.size(); ++i) {
+					std::vector<utils::VerticesContainerData> currentClippedTri;
+
+					for (utils::VerticesContainerData & vertice : clippedTri) {
+						utils::CLIP_STATUS clipStatus{ utils::triClipAgainstPlane(clippingPlanes[i].point, clippingPlanes[i].normal, vertice, currentTriData[0], currentTriData[1]) };
+
+						switch (clipStatus) {
+						case utils::CLIP_STATUS::CLIP_REJECTED:
+							continue;
+							
+						case utils::CLIP_STATUS::ONE_TRI_FORMED:
+
+							currentClippedTri.push_back(currentTriData[0]);
+							continue;
+						case utils::CLIP_STATUS::TWO_TRI_FORMED:
+
+							currentClippedTri.push_back(currentTriData[0]);
+							currentClippedTri.push_back(currentTriData[1]);
+							continue;
+						}
+
+					}
+
+					clippedTri = currentClippedTri;
+					
+				
+				}
+
+				for (utils::VerticesContainerData const &tri: clippedTri) {
+					Render::Graphics::drawTriangle(context, tri.container);
+				}
+
+			}
+
+
+			/*for (utils::VerticesContainerData& vertices : modelData.props.verticesToRender) {
+
+
+				for (utils::VerticesContainerData const& clippedVertices : verticesClipped) {
+
+					Render::Graphics::drawTriangle(context, clippedVertices.container);
+				}
+
+				verticesClipped = std::vector<utils::VerticesContainerData>{};
+			}*/
 		}
 
 
