@@ -5,21 +5,27 @@ namespace utils {
 	
 
 	/*READ INDEXES CONTAINED IN A VECTOR OF INDEXES(srcIdx) FROM SRC VERTICE*/
-	Mesh::Mesh(Vertices const& srcVertice, std::vector<VerticeIdx> const& srcIdx, Color defaultCol) {
+	Mesh::Mesh(std::vector<VertexData> const& srcVertice, std::vector<VerticeIdx> const& srcIdx, Color defaultCol) {
 		for (const VerticeIdx& verticeIdx : srcIdx) {
 			Vertices vertices;
-			vertices.reserve(3);
+			int currentArrayIdx{};
 			for (const int& idx : verticeIdx) {
-				vertices.push_back(
-
-					{
-						Vector3D{ srcVertice[idx].coordinates.x, srcVertice[idx].coordinates.y, srcVertice[idx].coordinates.z },
-						defaultCol
-					}
 				
-				);
+
+				vertices[currentArrayIdx] = VertexData{
+					Vector3D{ srcVertice[idx].coordinates.x, srcVertice[idx].coordinates.y, srcVertice[idx].coordinates.z },
+					defaultCol
+				};
+				
+				++currentArrayIdx;
+				
 			}
-			this->verticesContainer.push_back({ vertices, utils::VerticeData{} });
+			this->triangleContainer.push_back( 
+				Triangle { 
+					vertices, 
+					utils::VerticeMetaData{} 
+				}
+			);
 		}
 
 	}
@@ -29,19 +35,20 @@ namespace utils {
 		for (std::initializer_list<float> const &coords : src) {
 			
 			int idx{}; //Every 3 coordinates, reset to 0
-			Mesh::Vertices vertices;
+			Vertices vertices;
 			float tempCoordinates[3]{};
 
 			for (float const &val : coords) {
 				if (idx == 2) {
-					vertices.push_back(
-						{
+					vertices[idx] = VertexData {
 							Vector3D{
-							tempCoordinates[0],
-							tempCoordinates[1],
-							val
-							}
-						});
+								tempCoordinates[0],
+								tempCoordinates[1],
+								val
+							},
+							
+							Color{}
+					};
 
 
 					idx = 0;
@@ -52,7 +59,11 @@ namespace utils {
 
 				idx++;
 			}
-			verticesContainer.push_back({ vertices, utils::VerticeData{} });
+			triangleContainer.push_back(
+				Triangle { 
+					vertices, 
+					VerticeMetaData{} 
+				});
 		}
 		
 		return *this;

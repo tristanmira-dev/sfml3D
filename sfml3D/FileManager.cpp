@@ -8,7 +8,7 @@
 #include "Mesh.h"
 
 namespace {
-	void parseVtxData(std::istringstream& stringStream, utils::Mesh::Vertices& vertices);
+	void parseVtxData(std::istringstream& stringStream, std::vector<utils::VertexData>& vertices);
 	void parseVerticeIndex(std::istringstream& stringStream, std::vector<std::vector<int>>& verticeIdx);
 }
 
@@ -20,7 +20,7 @@ namespace manager {
 			return Status::FILE_OPEN_ERR;
 		}
 
-		utils::Mesh::Vertices vertices{};
+		std::vector<utils::VertexData> vertices;
 		std::vector<std::vector<int>> verticeIdx{};
 
 		std::string line{};
@@ -49,13 +49,14 @@ namespace manager {
 }
 
 namespace {
-	void parseVtxData(std::istringstream& stringStream, utils::Mesh::Vertices& vertices) {
+	void parseVtxData(std::istringstream& stringStream, std::vector<utils::VertexData>& vertices) {
 		utils::Vector3D vtx;
 		stringStream >> vtx.x;
 		stringStream >> vtx.y;
 		stringStream >> vtx.z;
-		vertices.push_back({
-			vtx
+		vertices.push_back(utils::VertexData {
+			vtx,
+			utils::Color {}
 		});
 	}
 	void parseVerticeIndex(std::istringstream& stringStream, std::vector<std::vector<int>>& verticeIdx) {

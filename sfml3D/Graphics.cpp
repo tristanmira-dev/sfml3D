@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 namespace Render {
-    void Graphics::drawTriangle(sf::RenderWindow& context, utils::Mesh::Vertices const& vertices, DrawMode mode) {
+    void Graphics::drawTriangle(sf::RenderWindow& context, utils::Vertices const& vertices, DrawMode mode) {
         std::vector<sf::Vertex> triangleVertices = {
             sf::Vertex{sf::Vector2f(vertices[0].coordinates.x, vertices[0].coordinates.y)},
             sf::Vertex{sf::Vector2f(vertices[1].coordinates.x, vertices[1].coordinates.y)},

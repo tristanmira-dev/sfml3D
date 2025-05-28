@@ -32,7 +32,7 @@ namespace utils {
 		return lineStart + (t*lineVect);
 	}
 
-	CLIP_STATUS triClipAgainstPlane(Vector3D planePoint, Vector3D planeNormal, VerticesContainerData& inputTri, VerticesContainerData& outputTri1, VerticesContainerData& outputTri2) {
+	CLIP_STATUS triClipAgainstPlane(Vector3D planePoint, Vector3D planeNormal, Triangle& inputTri, Triangle& outputTri1, Triangle& outputTri2) {
 		planeNormal.normalize();
 
 		int insidePoints{}; 
@@ -43,26 +43,26 @@ namespace utils {
 
 		int trianglesFormed{};
 
-		float d0{ pointToPlaneDist(planeNormal, inputTri.container[0].coordinates, planePoint) };
-		float d1{ pointToPlaneDist(planeNormal, inputTri.container[1].coordinates, planePoint) };
-		float d2{ pointToPlaneDist(planeNormal, inputTri.container[2].coordinates, planePoint) };
+		float d0{ pointToPlaneDist(planeNormal, inputTri.vertices[0].coordinates, planePoint) };
+		float d1{ pointToPlaneDist(planeNormal, inputTri.vertices[1].coordinates, planePoint) };
+		float d2{ pointToPlaneDist(planeNormal, inputTri.vertices[2].coordinates, planePoint) };
 
 		if (d0 >= 0.f) {
-			insidePointsPtr[insidePoints++] = &(inputTri.container[0]);
+			insidePointsPtr[insidePoints++] = &(inputTri.vertices[0]);
 		} else {
-			outsidePointsPtr[outsidePoints++] = &(inputTri.container[0]);
+			outsidePointsPtr[outsidePoints++] = &(inputTri.vertices[0]);
 		}
 
 		if (d1 >= 0.f) {
-			insidePointsPtr[insidePoints++] = &(inputTri.container[1]);
+			insidePointsPtr[insidePoints++] = &(inputTri.vertices[1]);
 		} else {
-			outsidePointsPtr[outsidePoints++] = &(inputTri.container[1]);
+			outsidePointsPtr[outsidePoints++] = &(inputTri.vertices[1]);
 		}
 
 		if (d2 >= 0.f) {
-			insidePointsPtr[insidePoints++] = &(inputTri.container[2]);
+			insidePointsPtr[insidePoints++] = &(inputTri.vertices[2]);
 		} else {
-			outsidePointsPtr[outsidePoints++] = &(inputTri.container[2]);
+			outsidePointsPtr[outsidePoints++] = &(inputTri.vertices[2]);
 		}
 
 
@@ -77,14 +77,14 @@ namespace utils {
 
 		if (insidePoints == 1) {
 			/*REFACTOR LATER*/
-			outputTri1.container[0].colorVal = utils::Color{ 255.f };
-			outputTri1.container[1].colorVal = utils::Color{ 255.f };
-			outputTri1.container[2].colorVal = utils::Color{ 255.f };
+			outputTri1.vertices[0].colorVal = utils::Color{ 255.f };
+			outputTri1.vertices[1].colorVal = utils::Color{ 255.f };
+			outputTri1.vertices[2].colorVal = utils::Color{ 255.f };
 
 
-			outputTri1.container[0].coordinates = insidePointsPtr[0]->coordinates;
-			outputTri1.container[1].coordinates = calcVectIntersect(planeNormal, planePoint,  insidePointsPtr[0]->coordinates, outsidePointsPtr[0]->coordinates);
-			outputTri1.container[2].coordinates = calcVectIntersect(planeNormal , planePoint, insidePointsPtr[0]->coordinates, outsidePointsPtr[1]->coordinates);
+			outputTri1.vertices[0].coordinates = insidePointsPtr[0]->coordinates;
+			outputTri1.vertices[1].coordinates = calcVectIntersect(planeNormal, planePoint,  insidePointsPtr[0]->coordinates, outsidePointsPtr[0]->coordinates);
+			outputTri1.vertices[2].coordinates = calcVectIntersect(planeNormal , planePoint, insidePointsPtr[0]->coordinates, outsidePointsPtr[1]->coordinates);
 
 			return ONE_TRI_FORMED;
 		}
@@ -100,23 +100,23 @@ namespace utils {
 			};
 
 			/*REFACTOR LATER*/
-			outputTri1.container[0].colorVal = utils::Color{ 0.f, 255.f };
-			outputTri1.container[1].colorVal = utils::Color{ 0.f, 255.f };
-			outputTri1.container[2].colorVal = utils::Color{ 0.5, 255.f };
+			outputTri1.vertices[0].colorVal = utils::Color{ 0.f, 255.f };
+			outputTri1.vertices[1].colorVal = utils::Color{ 0.f, 255.f };
+			outputTri1.vertices[2].colorVal = utils::Color{ 0.5, 255.f };
 
 
 			/*REFACTOR LATER*/
-			outputTri2.container[0].colorVal = utils::Color{ 0.f, 255.f };
-			outputTri2.container[1].colorVal = utils::Color{ 0.f, 255.f };
-			outputTri2.container[2].colorVal = utils::Color{ 0.5, 255.f };
+			outputTri2.vertices[0].colorVal = utils::Color{ 0.f, 255.f };
+			outputTri2.vertices[1].colorVal = utils::Color{ 0.f, 255.f };
+			outputTri2.vertices[2].colorVal = utils::Color{ 0.5, 255.f };
 
-			outputTri1.container[0].coordinates = insidePointsPtr[0]->coordinates;
-			outputTri1.container[1].coordinates = insidePointsPtr[1]->coordinates;
-			outputTri1.container[2].coordinates = pt1Intersect;
+			outputTri1.vertices[0].coordinates = insidePointsPtr[0]->coordinates;
+			outputTri1.vertices[1].coordinates = insidePointsPtr[1]->coordinates;
+			outputTri1.vertices[2].coordinates = pt1Intersect;
 
-			outputTri2.container[0].coordinates = insidePointsPtr[1]->coordinates;
-			outputTri2.container[1].coordinates = pt2Intersect;
-			outputTri2.container[2].coordinates = pt1Intersect;
+			outputTri2.vertices[0].coordinates = insidePointsPtr[1]->coordinates;
+			outputTri2.vertices[1].coordinates = pt2Intersect;
+			outputTri2.vertices[2].coordinates = pt1Intersect;
 
 			return TWO_TRI_FORMED;
 		}

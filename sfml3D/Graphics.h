@@ -14,7 +14,7 @@ namespace Render {
 
 	class Graphics {
 		public:
-			static void drawTriangle(sf::RenderWindow &context, utils::Mesh::Vertices const &vertices, DrawMode mode = TRIANGLE);
+			static void drawTriangle(sf::RenderWindow &context, utils::Vertices const &vertices, DrawMode mode = TRIANGLE);
 		private:
 
 

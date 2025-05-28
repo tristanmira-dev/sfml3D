@@ -18,7 +18,7 @@ namespace Entity {
 		struct Properties {
 			utils::Vector3D prevPosition;
 			utils::Vector3D position;
-			utils::Mesh::VerticesContainer verticesToRender;
+			utils::TriangleContainer verticesToRender;
 			utils::Matrix4x4 transformation;
 		} props;
 
