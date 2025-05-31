@@ -6,6 +6,7 @@
 
 
 namespace utils {
+	/*FOLLOWING UVN, U LEFT/RIGHT AXIS, V UP AXIS, N FORWARD AXIS*/
 	class Camera {
 		public:
 			Camera(Vector3D position);
@@ -13,9 +14,9 @@ namespace utils {
 			void translateRight(float x);
 			void translateForward(float z);
 			Vector3D const& getPosition();
-
-			/*REMOVE LATER, JUST TESTING*/
-			void incrementAngle();
+			void updateUVN();
+			void incDecYaw(float value);
+			void incDecPitch(float value);
 
 		private:
 			Vector3D position;
