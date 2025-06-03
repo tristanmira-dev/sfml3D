@@ -10,6 +10,7 @@
 #include "FileManager.h"
 #include "EventLoop.h"
 #include <iostream>
+#include <chrono>
 #include <initializer_list>
 #include <array>
 
@@ -80,11 +81,16 @@ int main() {
     /*float currentXAngle = 50.0f;
     float currentYAngle = 0.0f;*/
 
+    std::chrono::system_clock::time_point currentTime{ std::chrono::system_clock::now() };
+    std::chrono::duration<float> deltaTime{};
+    
 
 
     // run the program as long as the window is open
     while (window.isOpen())
     {
+
+        
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
         while (window.pollEvent(event))
@@ -94,23 +100,28 @@ int main() {
                 window.close();
         }
 
+        std::chrono::system_clock::time_point newTime{ std::chrono::system_clock::now() };
+        deltaTime = newTime - currentTime;
+        currentTime = newTime;
+
+
         // clear the window with black color
         window.clear(sf::Color::Black);
 
         utils::Vector3D currentCameraLoc{ camera.getPosition() };
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)) {
-            camera.translateRight(0.5f);
+            camera.translateRight(10.5f * deltaTime.count());
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)) {
-            camera.translateRight(-0.5f);
+            camera.translateRight(-10.5f * deltaTime.count());
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)) {
-            camera.translateForward(0.5f);
+            camera.translateForward(10.5f * deltaTime.count());
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)) {
-            camera.translateForward(-0.5f);
+            camera.translateForward(-10.5f * deltaTime.count());
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
             camera.incDecPitch(2.5f);
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
@@ -156,10 +167,7 @@ int main() {
 
         eventLoop.draw(window, mtx);
 
-
-
-
-      
+        currentTime = newTime;
 
         window.display();
     }
