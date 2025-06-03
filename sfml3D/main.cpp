@@ -8,16 +8,19 @@
 #include "CommonUtils.h"
 #include "GameObject.h"
 #include "FileManager.h"
+#include "EventLoop.h"
 #include <iostream>
 #include <initializer_list>
 #include <array>
 
 
-
+/**/
 
 int main() {
 
     tests::runTests();
+
+    Main::EventLoop eventLoop{};
 
     utils::Matrix4x4 mtx{};
 
@@ -32,27 +35,39 @@ int main() {
 
     mtx.setProjectionMatrix(window, 0.1f, 1000.0f, 30.0f);
 
-    Entity::GameObject<1> model1{ 
-        std::initializer_list<Entity::EntityInitializer>{
-            Entity::EntityInitializer{
-                "./Assets/Suzanne.obj" , 
-                utils::Color{255.f, 255.f, 255.f, 255.f}
-            }
-        }, 
-        camera 
-    };
+    eventLoop.addGameObject(
+        Entity::GameObject<1> {
+            std::initializer_list<Entity::EntityInitializer>{
+                Entity::EntityInitializer{
+                    "./Assets/Suzanne.obj" ,
+                    utils::Color{255.f, 255.f, 255.f, 255.f}
+                }
+            },
+            camera
+        }
+    );
 
-    Entity::GameObject<1> model2{
-        std::initializer_list<Entity::EntityInitializer>{
+    eventLoop.addGameObject(Entity::GameObject<1>{
+        std::initializer_list<Entity::EntityInitializer> {
             Entity::EntityInitializer{
                 "./Assets/Suzanne.obj" ,
                 utils::Color{255.f, 255.f, 255.f, 255.f}
             }
         },
         camera
-    };
+        });
 
-    Entity::GameObject<1> model3{
+    eventLoop.addGameObject(Entity::GameObject<1>{
+        std::initializer_list<Entity::EntityInitializer>{
+            Entity::EntityInitializer{
+                "./Assets/Suzanne.obj" ,
+                utils::Color{255.f, 0.f, 255.f, 255.f}
+            }
+        },
+            camera
+    });
+
+    eventLoop.addGameObject({
         std::initializer_list<Entity::EntityInitializer>{
             Entity::EntityInitializer{
                 "./Assets/Suzanne.obj" ,
@@ -60,17 +75,7 @@ int main() {
             }
         },
         camera
-    };
-
-    Entity::GameObject<1> model4{
-        std::initializer_list<Entity::EntityInitializer>{
-            Entity::EntityInitializer{
-                "./Assets/Suzanne.obj" ,
-                utils::Color{255.f, 0.f, 255.f, 255.f}
-            }
-        },
-        camera
-    };
+       });
 
     /*float currentXAngle = 50.0f;
     float currentYAngle = 0.0f;*/
@@ -88,6 +93,9 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+
+        // clear the window with black color
+        window.clear(sf::Color::Black);
 
         utils::Vector3D currentCameraLoc{ camera.getPosition() };
 
@@ -136,23 +144,22 @@ int main() {
         };
 
         rotationY.setRotationX(180.f);
+        eventLoop.clear();
 
-        model1[0].setTransform(translateGameObj * rotationY);
+        eventLoop[0][0].setTransform(translateGameObj * rotationY);
 
-        model2[0].setTransform(translateGameObj2 * rotationY);
+        eventLoop[1][0].setTransform(translateGameObj2 * rotationY);
 
-        model3[0].setTransform(translate3 * rotationY);
+        eventLoop[2][0].setTransform(translate3 * rotationY);
 
-        model4[0].setTransform(translate4 * rotationY);
+        eventLoop[3][0].setTransform(translate4 * rotationY);
 
-        // clear the window with black color
-        window.clear(sf::Color::Black);
+        eventLoop.draw(window, mtx);
 
 
-        model2.draw(window, mtx);
-        model1.draw(window, mtx);
-        model3.draw(window, mtx);
-        model4.draw(window, mtx);
+
+
+      
 
         window.display();
     }

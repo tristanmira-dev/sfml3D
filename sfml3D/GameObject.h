@@ -40,9 +40,7 @@ namespace Entity {
 			utils::Vector3D getCurrentPosition();
 			GameObject(std::initializer_list<EntityInitializer> initList, utils::Camera &camera);
 
-			void prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx);
-
-			void draw(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx);
+			void prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx, utils::TriangleContainer& verticesToRender);
 
 			ModelData& operator[](int idx);
 
