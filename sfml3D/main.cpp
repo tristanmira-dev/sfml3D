@@ -78,6 +78,16 @@ int main() {
         camera
        });
 
+    eventLoop.addGameObject({
+        std::initializer_list<Entity::EntityInitializer>{
+            Entity::EntityInitializer{
+                "./Assets/Suzanne.obj" ,
+                utils::Color{255.f, 0.f, 255.f, 255.f}
+            }
+        },
+        camera
+        });
+
     /*float currentXAngle = 50.0f;
     float currentYAngle = 0.0f;*/
 
@@ -111,17 +121,17 @@ int main() {
         utils::Vector3D currentCameraLoc{ camera.getPosition() };
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)) {
-            camera.translateRight(10.5f * deltaTime.count());
+            camera.translateRight(20.5f * deltaTime.count());
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)) {
-            camera.translateRight(-10.5f * deltaTime.count());
+            camera.translateRight(-20.5f * deltaTime.count());
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)) {
-            camera.translateForward(10.5f * deltaTime.count());
+            camera.translateForward(20.5f * deltaTime.count());
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)) {
-            camera.translateForward(-10.5f * deltaTime.count());
+            camera.translateForward(-20.5f * deltaTime.count());
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
             camera.incDecPitch(2.5f);
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
@@ -146,6 +156,13 @@ int main() {
             {0.f, 0.f, 0.f, 1.f}
         };
 
+        utils::Matrix4x4 translate5{
+           {1.f, 0.f, 0.f, 12.f},
+           {0.f, 1.f, 0.f, 0.f},
+           {0.f, 0.f, 1.f, 8.f},
+           {0.f, 0.f, 0.f, 1.f}
+        };
+
         utils::Matrix4x4 translateGameObj = {
             {1,0,0,0.f}, {0,1,0,0.f}, {0,0,1,8.f}, {0,0,0,1}
         };
@@ -164,6 +181,7 @@ int main() {
         eventLoop[2][0].setTransform(translate3 * rotationY);
 
         eventLoop[3][0].setTransform(translate4 * rotationY);
+        eventLoop[4][0].setTransform(translate5 * rotationY);
 
         eventLoop.draw(window, mtx);
 
