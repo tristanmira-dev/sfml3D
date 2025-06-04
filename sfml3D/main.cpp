@@ -88,6 +88,18 @@ int main() {
         camera
         });
 
+    eventLoop.addGameObject(
+        Entity::GameObject<1> {
+        std::initializer_list<Entity::EntityInitializer>{
+            Entity::EntityInitializer{
+                "./Assets/Sample.obj" ,
+                utils::Color{255.f, 255.f, 255.f, 255.f}
+            }
+        },
+            camera
+    }
+    );
+
     /*float currentXAngle = 50.0f;
     float currentYAngle = 0.0f;*/
 
@@ -133,13 +145,13 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)) {
             camera.translateForward(-20.5f * deltaTime.count());
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
-            camera.incDecPitch(2.5f);
+            camera.incDecPitch(100.f * deltaTime.count());
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
-            camera.incDecPitch(-2.5f);
+            camera.incDecPitch(-100.f * deltaTime.count());
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Left)) {
-            camera.incDecYaw(-2.5f);
+            camera.incDecYaw(-100.f * deltaTime.count());
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) {
-            camera.incDecYaw(2.5f);
+            camera.incDecYaw(100.f * deltaTime.count());
         }
 
         utils::Matrix4x4 translate3{
@@ -158,6 +170,13 @@ int main() {
 
         utils::Matrix4x4 translate5{
            {1.f, 0.f, 0.f, 12.f},
+           {0.f, 1.f, 0.f, 0.f},
+           {0.f, 0.f, 1.f, 8.f},
+           {0.f, 0.f, 0.f, 1.f}
+        };
+
+        utils::Matrix4x4 translate6{
+           {1.f, 0.f, 0.f, 15.f},
            {0.f, 1.f, 0.f, 0.f},
            {0.f, 0.f, 1.f, 8.f},
            {0.f, 0.f, 0.f, 1.f}
@@ -182,6 +201,7 @@ int main() {
 
         eventLoop[3][0].setTransform(translate4 * rotationY);
         eventLoop[4][0].setTransform(translate5 * rotationY);
+        eventLoop[5][0].setTransform(translate6 * rotationY);
 
         eventLoop.draw(window, mtx);
 

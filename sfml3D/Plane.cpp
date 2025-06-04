@@ -83,6 +83,10 @@ namespace utils {
 			outputTri1.vertices[2].colorVal = utils::Color{ 255.f };
 			*/
 
+			outputTri1.vertices[0].colorVal = inputTri.vertices[0].colorVal;
+			outputTri1.vertices[1].colorVal = inputTri.vertices[1].colorVal;
+			outputTri1.vertices[2].colorVal = inputTri.vertices[2].colorVal;
+
 
 			outputTri1.vertices[0].coordinates = insidePointsPtr[0]->coordinates;
 			outputTri1.vertices[1].coordinates = calcVectIntersect(planeNormal, planePoint,  insidePointsPtr[0]->coordinates, outsidePointsPtr[0]->coordinates);
@@ -106,11 +110,19 @@ namespace utils {
 			outputTri1.vertices[1].colorVal = utils::Color{ 0.f, 255.f };
 			outputTri1.vertices[2].colorVal = utils::Color{ 0.5, 255.f };*/
 
+			outputTri1.vertices[0].colorVal = inputTri.vertices[0].colorVal;
+			outputTri1.vertices[1].colorVal = inputTri.vertices[1].colorVal;
+			outputTri1.vertices[2].colorVal = inputTri.vertices[2].colorVal;
+
 
 			/*REFACTOR LATER*/ //DEBUG COLORS
 			/*outputTri2.vertices[0].colorVal = utils::Color{ 0.f, 255.f };
 			outputTri2.vertices[1].colorVal = utils::Color{ 0.f, 255.f };
 			outputTri2.vertices[2].colorVal = utils::Color{ 0.5, 255.f };*/
+
+			outputTri2.vertices[0].colorVal = inputTri.vertices[0].colorVal;
+			outputTri2.vertices[1].colorVal = inputTri.vertices[1].colorVal;
+			outputTri2.vertices[2].colorVal = inputTri.vertices[2].colorVal;
 
 			outputTri1.vertices[0].coordinates = insidePointsPtr[0]->coordinates;
 			outputTri1.vertices[1].coordinates = insidePointsPtr[1]->coordinates;
