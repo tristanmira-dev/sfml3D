@@ -130,7 +130,7 @@ int main() {
         // clear the window with black color
         window.clear(sf::Color::Black);
 
-        utils::Vector3D currentCameraLoc{ camera.getPosition() };
+        /*utils::Vector3D currentCameraLoc{ camera.getPosition() };
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)) {
             camera.translateRight(20.5f * deltaTime.count());
@@ -205,7 +205,9 @@ int main() {
 
         eventLoop.draw(window, mtx);
 
-        currentTime = newTime;
+        currentTime = newTime;*/
+
+
 
         window.display();
     }

@@ -56,6 +56,14 @@ namespace Entity {
 				/*-------------------------------*/
 
 
+
+
+				/*CAMERA TRANSFORM*/
+				utils::Mesh::transformVertice(camera.getTransformation(), translated.vertices);
+				/*-------------------------------*/
+
+				/*----------------------------NEXT LINES OF CODE IS IN CAMERA SPACE------------------------------------*/
+
 				/*USED FOR CALCULATING THE NORMAL*/
 				utils::Vector3D vec1, vec2;
 
@@ -63,20 +71,11 @@ namespace Entity {
 				vec1 = translated.vertices[1].coordinates - translated.vertices[0].coordinates;
 				vec2 = translated.vertices[2].coordinates - translated.vertices[0].coordinates;
 				triangle.data.normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
-				triangle.data.normal.normalize();
 				/*------------------------------------------------------*/
 
 				/*CALCULATE VECTOR FORMED FROM CAMERA TO VERTEX IN WORLD SPACE (LINE FROM CAMERA TO CURRENT VERTICE)*/
 				/*SET THE VECTOR FROM TRIANGLE PT TO CAMERA(0,0,0) IN ORDER TO DO 'CULLING'*/
-				utils::Vector3D lineFromCam = translated.vertices[0].coordinates - camera.getPosition();
-
-
-
-
-				/*CAMERA TRANSFORM*/
-				utils::Mesh::transformVertice(camera.getTransformation(), translated.vertices);
-				/*-------------------------------*/
-
+				utils::Vector3D lineFromCam = translated.vertices[0].coordinates;
 
 				/*CLIPPING*/
 				std::array<utils::Triangle, 2> trianglesFormed{};
@@ -88,6 +87,7 @@ namespace Entity {
 						continue;
 
 					case utils::ONE_TRI_FORMED:
+						triangle.data.normal.normalize();
 							if (triangle.data.normal.dot(lineFromCam) < 0.0f) {
 
 								projected.vertices[0] = utils::VertexData { 
@@ -148,6 +148,7 @@ namespace Entity {
 						continue;
 
 					case utils::TWO_TRI_FORMED:
+						triangle.data.normal.normalize();
 						for (int n{}; n < 2; ++n) {
 							if (triangle.data.normal.dot(lineFromCam) < 0.0f) {
 
