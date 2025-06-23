@@ -1,3 +1,5 @@
+#include <SDL3/SDL.h>
+#include <algorithm>
 #include "EventLoop.h"
 #include "Graphics.h"
 #include "Plane.h"
@@ -10,8 +12,8 @@ namespace {
 			float prevMidZ{};
 			float nextMidZ{};
 			for (int i{}; i < 3; ++i) {
-				prevMidZ += prev.vertices[i].coordinates.z;
-				nextMidZ += next.vertices[i].coordinates.z;
+				prevMidZ += prev.vertices.container[i].coordinates.z;
+				nextMidZ += next.vertices.container[i].coordinates.z;
 			}
 
 			return prevMidZ / 2.f > nextMidZ / 2.f;
@@ -29,9 +31,16 @@ namespace Main {
 		verticesToRender = std::vector<utils::Triangle>{};
 	}
 
-	void EventLoop::draw(sf::RenderWindow& context, utils::Matrix4x4& projectionMtx) {
+	void EventLoop::draw(SDL_Renderer *& renderer, SDL_Window *& window, utils::Matrix4x4& projectionMtx) {
+		int windowHeight{};
+		int windowWidth{};
+		
+		SDL_GetWindowSizeInPixels(window, &windowWidth, &windowHeight);
+
+
+
 		for (Entity::GameObject<>& gameObj : gameObjCollection) {
-			gameObj.prepToRender(context, projectionMtx, verticesToRender);
+			gameObj.prepToRender(window, projectionMtx, verticesToRender);
 		}
 
 		struct planeData {
@@ -43,13 +52,12 @@ namespace Main {
 
 		std::vector<planeData> clippingPlanes{
 			planeData{utils::Vector3D{0.f, 1.f, 0.f}, utils::Vector3D{0.f, 0.f, 0.f}}, //TOP
-			planeData{utils::Vector3D{-1.f, 0.f, 0.f}, utils::Vector3D{(float)context.getSize().x, 0.f, 0.f}}, //RIGHT
+			planeData{utils::Vector3D{-1.f, 0.f, 0.f}, utils::Vector3D{static_cast<float>(windowWidth), 0.f, 0.f}}, //RIGHT
 			planeData{utils::Vector3D{1.f, 0.f, 0.f}, utils::Vector3D{0.f, 0.f, 0.f}}, //LEFT
-			planeData{utils::Vector3D{0.f, -1.f, 0.f}, utils::Vector3D{0.f, (float)context.getSize().y, 0.f}} //BOTTOM
+			planeData{utils::Vector3D{0.f, -1.f, 0.f}, utils::Vector3D{0.f, static_cast<float>(windowHeight), 0.f}} //BOTTOM
 		};
 
 
-		std::sort(verticesToRender.begin(), verticesToRender.end(), SortCriterion{});
 
 
 
@@ -65,20 +73,20 @@ namespace Main {
 				utils::CLIP_STATUS clipStatus{ utils::triClipAgainstPlane(clippingPlanes[0].point, clippingPlanes[0].normal, triangle, currentTriData[0], currentTriData[1]) };
 
 				switch (clipStatus) {
-				case utils::CLIP_STATUS::CLIP_REJECTED:
-					//clippedTri.push_back(currentTriData);
-					continue;
-				case utils::CLIP_STATUS::ONE_TRI_FORMED:
+					case utils::CLIP_STATUS::CLIP_REJECTED:
+						//clippedTri.push_back(currentTriData);
+						continue;
+					case utils::CLIP_STATUS::ONE_TRI_FORMED:
 
-					clippedTri.push_back(currentTriData[0]);
+						clippedTri.push_back(currentTriData[0]);
 
-					break;
-				case utils::CLIP_STATUS::TWO_TRI_FORMED:
+						break;
+					case utils::CLIP_STATUS::TWO_TRI_FORMED:
 
-					clippedTri.push_back(currentTriData[0]);
-					clippedTri.push_back(currentTriData[1]);
+						clippedTri.push_back(currentTriData[0]);
+						clippedTri.push_back(currentTriData[1]);
 
-					break;
+						break;
 				}
 
 				for (int i{ 1 }; i < clippingPlanes.size(); ++i) {
@@ -96,7 +104,6 @@ namespace Main {
 							currentClippedTri.push_back(currentTriData[0]);
 							continue;
 						case utils::CLIP_STATUS::TWO_TRI_FORMED:
-
 							currentClippedTri.push_back(currentTriData[0]);
 							currentClippedTri.push_back(currentTriData[1]);
 							continue;
@@ -110,13 +117,10 @@ namespace Main {
 				}
 
 				for (utils::Triangle const& tri : clippedTri) {
-					Render::Graphics::drawTriangle(context, tri.vertices);
+					Render::Graphics::drawTriangle(renderer, tri.vertices);
 				}
 
 			}
-
-
-
 		
 	}
 

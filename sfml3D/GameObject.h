@@ -1,14 +1,16 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+#include <string>
+#include <initializer_list>
+#include <SDL3/SDL.h>
 #include <array>
 #include "Mesh.h"
 #include "Vector3D.h"
 #include "Matrix.h"
 #include "Color.h"
 #include "Camera.h"
-#include <string>
-#include <initializer_list>
+
 
 /*TODO ALLOW A SIMPLE INTERFACE 3D OBJECTS WITH*/
 
@@ -40,7 +42,7 @@ namespace Entity {
 			utils::Vector3D getCurrentPosition();
 			GameObject(std::initializer_list<EntityInitializer> initList, utils::Camera &camera);
 
-			void prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx, utils::TriangleContainer& verticesToRender);
+			void prepToRender(SDL_Window *& context, utils::Matrix4x4 const& projectionMtx, utils::TriangleContainer& verticesToRender);
 
 			ModelData& operator[](int idx);
 

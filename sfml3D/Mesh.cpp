@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Vertices.h"
 #include "Color.h"
 
 namespace utils {
@@ -12,7 +13,7 @@ namespace utils {
 			for (const int& idx : verticeIdx) {
 				
 
-				vertices[currentArrayIdx] = VertexData{
+				vertices.container[currentArrayIdx] = VertexData{
 					Vector3D{ srcVertice[idx].coordinates.x, srcVertice[idx].coordinates.y, srcVertice[idx].coordinates.z },
 					defaultCol
 				};
@@ -40,7 +41,7 @@ namespace utils {
 
 			for (float const &val : coords) {
 				if (idx == 2) {
-					vertices[idx] = VertexData {
+					vertices.container[idx] = VertexData {
 							Vector3D{
 								tempCoordinates[0],
 								tempCoordinates[1],
@@ -69,15 +70,14 @@ namespace utils {
 		return *this;
 	}
 	void Mesh::transformVertice(Matrix4x4& mtx, Vertices& vertices) {
-		vertices[0].coordinates = mtx * vertices[0].coordinates;
-		vertices[1].coordinates = mtx * vertices[1].coordinates;
-		vertices[2].coordinates = mtx * vertices[2].coordinates;
+		vertices.container[0].coordinates = mtx * vertices.container[0].coordinates;
+		vertices.container[1].coordinates = mtx * vertices.container[1].coordinates;
+		vertices.container[2].coordinates = mtx * vertices.container[2].coordinates;
 	}
 
 	void Mesh::transformVertice(Matrix4x4 const& mtx, Vertices& vertices) {
-		vertices[0].coordinates = mtx * vertices[0].coordinates;
-		vertices[1].coordinates = mtx * vertices[1].coordinates;
-		vertices[2].coordinates = mtx * vertices[2].coordinates;
+		vertices.container[0].coordinates = mtx * vertices.container[0].coordinates;
+		vertices.container[1].coordinates = mtx * vertices.container[1].coordinates;
+		vertices.container[2].coordinates = mtx * vertices.container[2].coordinates;
 	}
-	VertexData::VertexData(Vector3D coordinates, Color colorVal) : coordinates{ coordinates }, colorVal{colorVal} { /*EMPTY*/ }
 }

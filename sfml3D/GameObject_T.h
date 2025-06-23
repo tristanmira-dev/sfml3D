@@ -6,23 +6,9 @@
 #include "Mesh.h"
 #include <array>
 #include <iostream>
-#include <SFML/Graphics.hpp>
 #include <vector>
 
 namespace Entity {
-	class SortCriterion {
-	public:
-		bool operator()(utils::Triangle const& prev, utils::Triangle const& next) {
-			float prevMidZ{};
-			float nextMidZ{};
-			for (int i{}; i < 3; ++i) {
-				prevMidZ += prev.vertices[i].coordinates.z;
-				nextMidZ += next.vertices[i].coordinates.z;
-			}
-
-			return prevMidZ / 2.f > nextMidZ / 2.f;
-		}
-	};
 
 	template<int numOfMesh>
 	utils::Vector3D GameObject<numOfMesh>::getCurrentPosition() { return this->model[0].props.position; }
@@ -40,7 +26,11 @@ namespace Entity {
 
 
 	template<int numOfMesh>
-	void Entity::GameObject<numOfMesh>::prepToRender(sf::RenderWindow& context, utils::Matrix4x4 const& projectionMtx, utils::TriangleContainer &verticesToRender) {
+	void Entity::GameObject<numOfMesh>::prepToRender(SDL_Window*& context, utils::Matrix4x4 const& projectionMtx, utils::TriangleContainer& verticesToRender) {
+		int windowHeight{};
+		int windowWidth{};
+
+		SDL_GetWindowSizeInPixels(context, &windowWidth, &windowHeight);
 
 
 		for (ModelData& modelData : model) {
@@ -68,8 +58,8 @@ namespace Entity {
 				utils::Vector3D vec1, vec2;
 
 				/*CALCULATE THE NORMAL OF EACH TRIANGLE FACE IN THE PLANE*/
-				vec1 = translated.vertices[1].coordinates - translated.vertices[0].coordinates;
-				vec2 = translated.vertices[2].coordinates - translated.vertices[0].coordinates;
+				vec1 = translated.vertices.container[1].coordinates - translated.vertices.container[0].coordinates;
+				vec2 = translated.vertices.container[2].coordinates - translated.vertices.container[0].coordinates;
 				triangle.data.normal = vec1.cross(vec2); //CROSS PRODUCT BETWEEN TWO VECTORS TO GET THE NORMAL VECTOR
 				/*------------------------------------------------------*/
 
@@ -113,8 +103,8 @@ namespace Entity {
 
 								float dist{ std::fabs(triangle.data.normal.dot(light)) };
 
-								float halfDistX{ context.getSize().x * 0.5f };
-								float halfDistY{ context.getSize().y * 0.5f };
+								float halfDistX{ windowWidth * 0.5f };
+								float halfDistY{ windowHeight * 0.5f };
 
 								/*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
 								utils::Matrix4x4 transform2 = utils::Matrix4x4{
@@ -123,8 +113,8 @@ namespace Entity {
 									{0, 0, 1, 0},
 									{0, 0, 0, 1}
 								} *utils::Matrix4x4{
-									{static_cast<float>(context.getSize().x), 0, 0, 0},
-									{0, static_cast<float>(context.getSize().y), 0, 0},
+									{static_cast<float>(windowWidth), 0, 0, 0},
+									{0, static_cast<float>(windowHeight), 0, 0},
 									{0, 0, 1, 0},
 									{0,0,0,1}
 								};
@@ -167,8 +157,8 @@ namespace Entity {
 
 								float dist{ std::fabs(triangle.data.normal.dot(light)) };
 
-								float halfDistX{ context.getSize().x * 0.5f };
-								float halfDistY{ context.getSize().y * 0.5f };
+								float halfDistX{ windowWidth * 0.5f };
+								float halfDistY{ windowHeight * 0.5f };
 
 								/*SCALE UP TO WINDOW DIMENSIONS AND THEN TRANSLATE TO MIDDLE OF SCREEN*/
 								utils::Matrix4x4 transform2 = utils::Matrix4x4{
@@ -177,8 +167,8 @@ namespace Entity {
 									{0, 0, 1, 0},
 									{0, 0, 0, 1}
 								} *utils::Matrix4x4{
-									{static_cast<float>(context.getSize().x), 0, 0, 0},
-									{0, static_cast<float>(context.getSize().y), 0, 0},
+									{static_cast<float>(windowWidth), 0, 0, 0},
+									{0, static_cast<float>(windowHeight), 0, 0},
 									{0, 0, 1, 0},
 									{0,0,0,1}
 								};

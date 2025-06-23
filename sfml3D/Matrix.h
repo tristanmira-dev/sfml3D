@@ -3,10 +3,9 @@
 
 #include <initializer_list>
 #include <cstddef>
-#include <SFML/Graphics.hpp>
 #include <ostream>
+#include <SDL3/SDL.h>
 #include "Vector3D.h"
-
 
 namespace utils {
 
@@ -29,7 +28,7 @@ namespace utils {
 		Vector3D pMultiply(Vector3D const& vec) const;
 
 		//Setters for Special Matrices
-		void setProjectionMatrix(sf::RenderWindow const& context, float fNear, float fFar, float fFov);
+		void setProjectionMatrix(SDL_Window*& context, float fNear, float fFar, float fFov);
 		void setIdentityMatrix();
 		void setTranslationMatrix(float x, float y, float z);
 		void setTranslationMatrix(utils::Vector3D const &src);

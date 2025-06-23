@@ -1,9 +1,9 @@
 #ifndef GRAPHICS_HPP
 #define GRAPHICS_HPP
 
-#include "Mesh.h"
-#include <SFML/Graphics.hpp>
-
+//#include "Mesh.h"
+#include <SDL3/SDL.h>
+#include "Vertices.h"
 
 namespace Render {
 
@@ -14,7 +14,7 @@ namespace Render {
 
 	class Graphics {
 		public:
-			static void drawTriangle(sf::RenderWindow &context, utils::Vertices const &vertices, DrawMode mode = TRIANGLE);
+			static void drawTriangle(SDL_Renderer*& renderer, utils::Vertices const& vertices, DrawMode mode = DrawMode::TRIANGLE);
 		private:
 
 

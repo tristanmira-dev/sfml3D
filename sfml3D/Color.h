@@ -1,17 +1,17 @@
 #ifndef COLOR_H
 #define COLOR_H
-#include <SFML/Graphics.hpp>
+#include <cstdint>
 
 namespace utils {
 	struct Color {
-		float r;
-		float g;
-		float b;
-		float a;
+		uint8_t r;
+		uint8_t g;
+		uint8_t b;
+		uint8_t a;
 
-		Color(float r = 0.f, float g = 0.f, float b = 0.f, float a = 255.f);
+		Color(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255);
 		Color operator*(float scalar);
-		operator sf::Color() const;
+		/*operator sf::Color() const;*/
 		
 	};
 }

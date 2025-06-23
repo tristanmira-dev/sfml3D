@@ -6,6 +6,7 @@
 #include "FileManager.h"
 #include "CommonUtils.h"
 #include "Mesh.h"
+#include "Vertices.h"
 
 namespace {
 	void parseVtxData(std::istringstream& stringStream, std::vector<utils::VertexData>& vertices);

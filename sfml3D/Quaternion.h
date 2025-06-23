@@ -1,5 +1,6 @@
 #ifndef QUATERNION_H
 #define QUATERNION_H
+
 #include "Vector3D.h"
 
 namespace utils {

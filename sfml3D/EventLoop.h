@@ -1,11 +1,11 @@
 #ifndef EVENTLOOP_H
 #define EVENTLOOP_H
 
+#include <SDL3/SDL.h>
 #include "Mesh.h"
 #include "GameObject.h"
 #include "Matrix.h"
 #include "Graphics.h"
-#include <SFML/Graphics.hpp>
 
 namespace Main {
 
@@ -17,7 +17,7 @@ namespace Main {
 			void addGameObject(Entity::GameObject<> const& gameObj);
 
 			void clear();
-			void draw(sf::RenderWindow &context, utils::Matrix4x4 &projectionMtx);
+			void draw(SDL_Renderer*& renderer, SDL_Window*& window, utils::Matrix4x4& projectionMtx);
 			
 			Entity::GameObject<> &operator[](int idx);
 

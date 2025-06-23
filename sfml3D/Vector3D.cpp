@@ -64,6 +64,9 @@ namespace utils {
 		};
 	}
 
+	
+	
+
 	bool Vector3D::operator==(Vector3D const& compare2) {
 		return this->x == compare2.x && this->y == compare2.y && this->z == compare2.z;
 	}
@@ -71,6 +74,14 @@ namespace utils {
 	Vector3D Vector3D::operator-(Vector3D const& vec2) {
 
 		return Vector3D {
+			this->x - vec2.x,
+			this->y - vec2.y,
+			this->z - vec2.z
+		};
+	}
+
+	Vector3D Vector3D::operator-(Vector3D const& vec2) const {
+		return Vector3D{
 			this->x - vec2.x,
 			this->y - vec2.y,
 			this->z - vec2.z

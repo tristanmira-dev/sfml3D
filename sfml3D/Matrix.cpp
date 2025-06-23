@@ -1,7 +1,7 @@
+#include <iostream>
+#include <SDL3/SDL.h>
 #include "Matrix.h"
 #include "CommonUtils.h"
-#include <SFML/Graphics.hpp>
-#include <iostream>
 
 namespace utils {
 	Matrix4x4::Matrix4x4() : m{0}{}
@@ -20,8 +20,13 @@ namespace utils {
 		}
 	}
 
-	void Matrix4x4::setProjectionMatrix(sf::RenderWindow const &context, float fNear, float fFar, float fFov){
-		float aspectRatio{static_cast<float>(context.getSize().y) / static_cast<float>(context.getSize().x)};
+	void Matrix4x4::setProjectionMatrix (SDL_Window  *&context, float fNear, float fFar, float fFov) {
+		int contextWidth{};
+		int contextHeight{};
+
+		SDL_GetWindowSizeInPixels(context, &contextWidth, &contextHeight);
+
+		float aspectRatio{static_cast<float>(contextHeight) / static_cast<float>(contextWidth)};
 		float fFovRad{ 1.0f / tanf(utils::toRad(fFov * 0.5f)) };
 
 
