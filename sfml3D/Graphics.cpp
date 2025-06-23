@@ -106,18 +106,20 @@ namespace Render {
 
         float alpha{ (v1->coordinates.y - v0->coordinates.y) / (v2->coordinates.y - v0->coordinates.y) };
 
-        utils::VertexData vi{ v0->coordinates + alpha * (v2->coordinates - v0->coordinates) };
+        utils::VertexData vi{ v0->coordinates - alpha * (v0->coordinates - v2->coordinates) };
         
-        /*2 LEFT EDGE TRIANGLE*/
+        
+        /*TWO LEFT EDGE TRIANGLE*/
         if (v1->coordinates.x < vi.coordinates.x) {
             drawFlatBottomTri(renderer,v0, v1, &vi);
             drawFlatTopTri(renderer,v1, &vi, v2);
         }
-        else { /*2 RIGHT EDGE TRIANGLE*/
+        else /*TWO RIGHT EDGE TRIANGLE*/ {
             drawFlatBottomTri(renderer,v0, &vi, v1);
             drawFlatTopTri(renderer,&vi, v1, v2);
         }
         
+
     }
 }
 
