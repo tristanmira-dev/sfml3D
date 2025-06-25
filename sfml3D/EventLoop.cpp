@@ -31,7 +31,7 @@ namespace Main {
 		verticesToRender = std::vector<utils::Triangle>{};
 	}
 
-	void EventLoop::draw(SDL_Renderer *& renderer, SDL_Window *& window, utils::Matrix4x4& projectionMtx) {
+	void EventLoop::draw(SDL_Renderer *& renderer, SDL_Window *& window, utils::Matrix4x4& projectionMtx, Uint32 *pixelBuff) {
 		int windowHeight{};
 		int windowWidth{};
 		
@@ -117,7 +117,7 @@ namespace Main {
 				}
 
 				for (utils::Triangle const& tri : clippedTri) {
-					Render::Graphics::drawTriangle(renderer, tri.vertices);
+					Render::Graphics::drawTriangle(pixelBuff,renderer, tri.vertices);
 				}
 
 			}

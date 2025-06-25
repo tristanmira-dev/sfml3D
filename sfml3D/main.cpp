@@ -15,6 +15,7 @@
 #include <array>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <cstring>
 
 
 
@@ -22,8 +23,22 @@
 
 int main(int argc, char *argv[]) {
 
+    //SDL_Color* pixelBuffer{ new SDL_Color[800 * 600] };
+
+
     SDL_Window* window{ nullptr };
     SDL_Renderer* renderer{ nullptr };
+
+
+    
+
+    SDL_FRect rect{};
+
+    Uint32* pixelBuff{ new Uint32[800 * 600] {0xFFFFFFFF} };
+
+    std::fill(pixelBuff, pixelBuff + 800 * 600, 0xFFFFFFFF);
+
+    
 
     tests::runTests();
 
@@ -43,11 +58,13 @@ int main(int argc, char *argv[]) {
 
     
 
+    
+
     eventLoop.addGameObject(
         Entity::GameObject<1> {
             std::initializer_list<Entity::EntityInitializer> {
                 Entity::EntityInitializer{
-                    "./Assets/test.obj",
+                    "./Assets/Suzanne.obj",
                     utils::Color{255, 255, 255, 255}
                 }
             }, camera
@@ -56,6 +73,8 @@ int main(int argc, char *argv[]) {
 
     std::chrono::system_clock::time_point currentTime{ std::chrono::system_clock::now() };
     std::chrono::duration<float> deltaTime{};
+
+    SDL_Texture* texture{ SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 800, 600) };
     while (true) {
 
         std::chrono::time_point newTime{ std::chrono::system_clock::now() };
@@ -100,6 +119,9 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        /*CLEAR PIXEL BUFFER STORED IN RAM BEFORE DRAWING*/
+        std::memset(pixelBuff, 0, sizeof(*pixelBuff) * 800 * 600);
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
@@ -114,126 +136,18 @@ int main(int argc, char *argv[]) {
 
         eventLoop.clear();
 
-        eventLoop.draw(renderer,window, mtx);
+        eventLoop.draw(renderer,window, mtx, pixelBuff);
         
+        
+
+        SDL_UpdateTexture(texture, nullptr, pixelBuff, 800*4);
+        SDL_RenderTexture(renderer, texture, nullptr, nullptr);
+
         //SDL_RenderLine
         SDL_RenderPresent(renderer);
     }
-    
 
-
-    
-
-    /*float currentXAngle = 50.0f;
-    float currentYAngle = 0.0f;*/
-
-   /* std::chrono::system_clock::time_point currentTime{ std::chrono::system_clock::now() };
-    std::chrono::duration<float> deltaTime{};*/
-    
-
-
-    // run the program as long as the window is open
-    //while (window.isOpen())
-    //{
-
-    //    
-    //    // check all the window's events that were triggered since the last iteration of the loop
-    //    sf::Event event;
-    //    while (window.pollEvent(event))
-    //    {
-    //        // "close requested" event: we close the window
-    //        if (event.type == sf::Event::Closed)
-    //            window.close();
-    //    }
-
-    //    std::chrono::system_clock::time_point newTime{ std::chrono::system_clock::now() };
-    //    deltaTime = newTime - currentTime;
-    //    currentTime = newTime;
-
-
-
-
-    //    /*utils::Vector3D currentCameraLoc{ camera.getPosition() };
-
-    //    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)) {
-    //        camera.translateRight(20.5f * deltaTime.count());
-    //    }
-    //    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)) {
-    //        camera.translateRight(-20.5f * deltaTime.count());
-    //    }
-
-    //    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)) {
-    //        camera.translateForward(20.5f * deltaTime.count());
-    //    }
-    //    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)) {
-    //        camera.translateForward(-20.5f * deltaTime.count());
-    //    } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Up)) {
-    //        camera.incDecPitch(100.f * deltaTime.count());
-    //    } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Down)) {
-    //        camera.incDecPitch(-100.f * deltaTime.count());
-    //    } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Left)) {
-    //        camera.incDecYaw(-100.f * deltaTime.count());
-    //    } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) {
-    //        camera.incDecYaw(100.f * deltaTime.count());
-    //    }
-
-    //    utils::Matrix4x4 translate3{
-    //        {1.f, 0.f, 0.f, 6.f},
-    //        {0.f, 1.f, 0.f, 0.f},
-    //        {0.f, 0.f, 1.f, 8.f},
-    //        {0.f, 0.f, 0.f, 1.f}
-    //    };
-
-    //    utils::Matrix4x4 translate4{
-    //        {1.f, 0.f, 0.f, 9.f},
-    //        {0.f, 1.f, 0.f, 0.f},
-    //        {0.f, 0.f, 1.f, 8.f},
-    //        {0.f, 0.f, 0.f, 1.f}
-    //    };
-
-    //    utils::Matrix4x4 translate5{
-    //       {1.f, 0.f, 0.f, 12.f},
-    //       {0.f, 1.f, 0.f, 0.f},
-    //       {0.f, 0.f, 1.f, 8.f},
-    //       {0.f, 0.f, 0.f, 1.f}
-    //    };
-
-    //    utils::Matrix4x4 translate6{
-    //       {1.f, 0.f, 0.f, 15.f},
-    //       {0.f, 1.f, 0.f, 0.f},
-    //       {0.f, 0.f, 1.f, 8.f},
-    //       {0.f, 0.f, 0.f, 1.f}
-    //    };
-
-    //    utils::Matrix4x4 translateGameObj = {
-    //        {1,0,0,0.f}, {0,1,0,0.f}, {0,0,1,8.f}, {0,0,0,1}
-    //    };
-
-    //    utils::Matrix4x4 translateGameObj2 = {
-    //        {1,0,0,3.f}, {0,1,0,0.f}, {0,0,1,8.f}, {0,0,0,1}
-    //    };
-
-    //    rotationY.setRotationX(180.f);
-    //    eventLoop.clear();
-
-    //    eventLoop[0][0].setTransform(translateGameObj * rotationY);
-
-    //    eventLoop[1][0].setTransform(translateGameObj2 * rotationY);
-
-    //    eventLoop[2][0].setTransform(translate3 * rotationY);
-
-    //    eventLoop[3][0].setTransform(translate4 * rotationY);
-    //    eventLoop[4][0].setTransform(translate5 * rotationY);
-    //    eventLoop[5][0].setTransform(translate6 * rotationY);
-
-    //    eventLoop.draw(window, mtx);
-
-    //    currentTime = newTime;*/
-    //    
-    //    window.display();
-
-    //    window.draw(wow);
-    //}
+    delete[] pixelBuff;
 
     return 0;
 }

@@ -17,7 +17,7 @@ namespace Main {
 			void addGameObject(Entity::GameObject<> const& gameObj);
 
 			void clear();
-			void draw(SDL_Renderer*& renderer, SDL_Window*& window, utils::Matrix4x4& projectionMtx);
+			void draw(SDL_Renderer*& renderer, SDL_Window*& window, utils::Matrix4x4& projectionMtx, Uint32* pixelBuff);
 			
 			Entity::GameObject<> &operator[](int idx);
 

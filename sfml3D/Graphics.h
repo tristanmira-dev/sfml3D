@@ -14,7 +14,7 @@ namespace Render {
 
 	class Graphics {
 		public:
-			static void drawTriangle(SDL_Renderer*& renderer, utils::Vertices const& vertices, DrawMode mode = DrawMode::TRIANGLE);
+			static void drawTriangle(Uint32* pixelBuff, SDL_Renderer*& renderer, utils::Vertices const& vertices, DrawMode mode = DrawMode::TRIANGLE);
 		private:
 
 

@@ -19,7 +19,7 @@ namespace {
         return p0 > p1 && p0 > p2 ? p0 : (p1 > p0 && p1 > p2) ? p1 : (p2 > p1 && p2 > p0) ? p2 : p0 == p1 ? p0 : p2 == p1 ? p1 : p0;
     }*/
 
-    void drawFlatTopTri(SDL_Renderer *&context, utils::VertexData const * const &v0, utils::VertexData const * const &v1, utils::VertexData const * const &v2) {
+    void drawFlatTopTri(Uint32 *pixelBuff, SDL_Renderer *&context, utils::VertexData const * const &v0, utils::VertexData const * const &v1, utils::VertexData const * const &v2) {
 
         float slope0{ (v2->coordinates.x - v0->coordinates.x) / (v2->coordinates.y - v0->coordinates.y) };
         float slope1{ (v2->coordinates.x - v1->coordinates.x) / (v2->coordinates.y - v1->coordinates.y) };
@@ -29,7 +29,7 @@ namespace {
         int endY{ static_cast<int>(ceilf(v2->coordinates.y - 0.5f)) };
 
 
-        SDL_SetRenderDrawColor(context, 255, 255, 255, 255);
+        //SDL_SetRenderDrawColor(context, 255, 255, 255, 255);
 
         for (int y{ startY }; y < endY; ++y) {
             float newStartXVal{ ((y + 0.5f) - v0->coordinates.y) * slope0 + v0->coordinates.x};
@@ -40,7 +40,8 @@ namespace {
             int endX{static_cast<int>(ceilf(newEndXVal - 0.5f)) };
 
             for (int x{ startX }; x < endX; ++x) {
-                SDL_RenderPoint(context, x, y);
+                pixelBuff[y * 800 + x] = 0xFFFFFFFF;
+                /*SDL_RenderPoint(context, x, y);*/
             }
         }
 
@@ -49,7 +50,7 @@ namespace {
 
     }
 
-    void drawFlatBottomTri(SDL_Renderer*& context, utils::VertexData const* const& v0, utils::VertexData const* const& v1, utils::VertexData const* const& v2) {
+    void drawFlatBottomTri(Uint32* pixelBuff, SDL_Renderer*& context, utils::VertexData const* const& v0, utils::VertexData const* const& v1, utils::VertexData const* const& v2) {
         float slope0{ (v1->coordinates.x - v0->coordinates.x) / (v1->coordinates.y - v0->coordinates.y) };
         float slope1{ (v2->coordinates.x - v0->coordinates.x) / (v2->coordinates.y - v0->coordinates.y) };
 
@@ -58,7 +59,7 @@ namespace {
         int endY{ static_cast<int>(ceilf(v2->coordinates.y - 0.5f)) };
 
 
-        SDL_SetRenderDrawColor(context, 255, 255, 255, 255);
+        //SDL_SetRenderDrawColor(context, 255, 255, 255, 255);
 
         for (int y{ startY }; y < endY; ++y) {
             float newStartXVal{ ((y + 0.5f) - v0->coordinates.y) * slope0 + v0->coordinates.x };
@@ -69,14 +70,14 @@ namespace {
             int endX{ static_cast<int>(ceilf(newEndXVal - 0.5f)) };
 
             for (int x{ startX }; x < endX; ++x) {
-                SDL_RenderPoint(context, x, y);
+                pixelBuff[y * 800 + x] = 0xFFFFFFFF;
             }
         }
     }
 }
 
 namespace Render {
-    void Graphics::drawTriangle(SDL_Renderer*& renderer, utils::Vertices const &vertices, DrawMode mode) {
+    void Graphics::drawTriangle(Uint32 *pixelBuff, SDL_Renderer*& renderer, utils::Vertices const &vertices, DrawMode mode) {
         
 
         std::chrono::system_clock::time_point currentTime{ std::chrono::system_clock::now() };
@@ -92,7 +93,7 @@ namespace Render {
             if (v0->coordinates.x > v1->coordinates.x) {
                 std::swap(v0, v1);
             }
-            drawFlatTopTri(renderer,v0,v1,v2);
+            drawFlatTopTri(pixelBuff,renderer,v0,v1,v2);
             return;
         } 
         
@@ -100,7 +101,7 @@ namespace Render {
             if (v1->coordinates.x > v2->coordinates.x) {
                 std::swap(v1, v2);
             }
-            drawFlatBottomTri(renderer, v0, v1, v2);
+            drawFlatBottomTri(pixelBuff,renderer, v0, v1, v2);
             return;
         }
 
@@ -111,14 +112,18 @@ namespace Render {
         
         /*TWO LEFT EDGE TRIANGLE*/
         if (v1->coordinates.x < vi.coordinates.x) {
-            drawFlatBottomTri(renderer,v0, v1, &vi);
-            drawFlatTopTri(renderer,v1, &vi, v2);
+            drawFlatBottomTri(pixelBuff, renderer, v0, v1, &vi);
+            drawFlatTopTri(pixelBuff,renderer,v1, &vi, v2);
         }
         else /*TWO RIGHT EDGE TRIANGLE*/ {
-            drawFlatBottomTri(renderer,v0, &vi, v1);
-            drawFlatTopTri(renderer,&vi, v1, v2);
+            drawFlatBottomTri(pixelBuff,renderer,v0, &vi, v1);
+            drawFlatTopTri(pixelBuff,renderer,&vi, v1, v2);
         }
+        /*std::chrono::time_point newTime{ std::chrono::system_clock::now() };
+
+        std::chrono::duration timeTaken{ newTime - currentTime };
         
+        std::cout << "TIME TAKEN " << timeTaken.count() << '\n';*/
 
     }
 }
